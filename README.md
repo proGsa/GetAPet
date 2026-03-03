@@ -41,5 +41,5 @@ docker compose up -d --build
 - **Анастасия Лобач**  
   <img src="images/a_lobach.png" alt="Анастасия Лобач " width="100"/>
 
-- **Людмила Фролова** 
-  <img src="images/l_frolova.png" alt="Людмила Фролова " width="100"/>
+- **Людмила Фролова**  
+  <img src="images/l_frolova.jpg" alt="Людмила Фролова " width="100"/>
