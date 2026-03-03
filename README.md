@@ -36,6 +36,7 @@ docker compose up -d --build
   <img src="images/s_belyak.jpg" alt="Софья Беляк " width="100"/>
 
 - **Наталия Гончар**
+  
   <img src="images/n_gonchar.jpg" alt="Наталия Гончар " width="100"/>
 
 - **Анастасия Лобач**  
