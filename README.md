@@ -30,7 +30,7 @@
 ```bash
 docker compose up -d --build
 ```
-##Команда проекта
+## Команда проекта
 
 - **Софья Беляк**  
   <img src="images/s_belyak.jpg" alt="Софья Беляк " width="100"/>
