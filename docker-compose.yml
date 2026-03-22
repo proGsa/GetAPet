@@ -1,0 +1,35 @@
+services:
+  db:
+    build:
+      context: ./backend
+      dockerfile: postgres/Dockerfile
+    container_name: getapet_db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: getapet_backend
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    command: go run ./cmd
+
+  test:
+    build: ./backend
+    depends_on:
+      - db
+    env_file:
+      - .env
+    command: go test ./...
+
+volumes:
+  pgdata:
