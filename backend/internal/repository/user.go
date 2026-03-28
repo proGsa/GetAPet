@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
 
 type UserRepository struct {
@@ -23,7 +24,7 @@ func (r *UserRepository) GetAll() ([]models.User, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *UserRepository) GetByID(_ int) (*models.User, error) {
+func (r *UserRepository) GetByID(_ uuid.UUID) (*models.User, error) {
 	return nil, errors.New("not implemented")
 }
 
@@ -31,10 +32,10 @@ func (r *UserRepository) GetByLogin(_ string) (*models.User, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *UserRepository) Update(_ int, _ *models.User) (*models.User, error) {
+func (r *UserRepository) Update(_ uuid.UUID, _ *models.User) (*models.User, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *UserRepository) Delete(_ int) error {
+func (r *UserRepository) Delete(_ uuid.UUID) error {
 	return errors.New("not implemented")
 }

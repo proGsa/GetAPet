@@ -1,0 +1,11 @@
+﻿id,fio,telephone_number,city,user_login,user_password,status,user_description
+ba23d123-6132-40f4-b761-69d3c238b40f,Носков Венедикт Даниилович,+79379372680,Екатеринбург,spiridon_1991,$2b$10$pwV9vHBpy/nlVrzDa8kB6uQauE1MH.MysyyaWHAFGkoAkct.EmxcW,buyer,Занимается разведением животных
+c115afd5-2701-475f-bd82-63e4d6c63e1b,Прохор Германович Прохоров,+79548802102,Казань,ratibor55,$2b$10$b/lO0Mre1zObNmyXXk3UKuox/8oo35pZE2G/fx4ZSlNpMCrZVqGOy,seller,Ответственный владелец
+0f4b4d93-307f-4989-9827-ad935f71e3f5,Юлия Георгиевна Горбунова,+79202468789,Уфа,natan1977,$2b$10$p4oHe5MC77C5B5VVZRC4V.QfamjW4UVr1Zl0jW/Gx14TMW2jcq42y,seller,Любитель кошек
+b9fe3687-9c4a-4541-b65f-2580f9c6a55f,Селезнева Фаина Георгиевна,+79911199822,Уфа,zahar64,$2b$10$05GEcC.Y0eIt.XGxglZRh.xXMlbWha9jQfam2.zujR2rC/xW8u0xO,seller,Любит животных и заботится о них
+4ed13d42-0adc-44de-bd87-2d11e732e398,Третьяков Лазарь Ануфриевич,+79396420804,Нижний Новгород,evgenija_57,$2b$10$5cvn5sv3j/eARJ.fXfiXG.B46bnZqTaceHI50qNJ7TzFIiOPBah4C,buyer,Любитель собак
+961193c7-2545-461c-b987-e17aeb6c581a,Шашкова Фаина Федоровна,+79188043746,Санкт-Петербург,vafanaseva,$2b$10$Vlhpnzzo8bn2eVaFFWBNhuipMy3EFziKMByq8RkiS6XLZdI7b4DdS,seller,Ищет питомца для семьи
+e602da44-eb68-4fe0-b254-6f4ee689d7a4,Прокофий Ерофеевич Лазарев,+79496200575,Новосибирск,grigori_2005,$2b$10$L13UZi0VhRdg.ARdsDKPk.YVp4XsENFuiGr6HtggcNdAuHyOINsfq,buyer,Любитель собак
+0262b5da-74e3-49a9-9678-f0a0a31e039a,Сократ Феоктистович Устинов,+79841358012,Краснодар,nina_1978,$2b$10$kE.8q8wPv0P43r4M49d6yeNUC5cVUwHfAJNdeMN4OhjPz9fu2jYdm,buyer,Любит животных и заботится о них
+3bf01fd4-c32d-4e64-a149-356dfa072f00,Аркадий Тарасович Костин,+79828162052,Казань,ernst_65,$2b$10$LwH5Rz1x.17RI5nH4HK7xOwTJqJb4EziqIK9dFQQe9SupSLazZgnW,buyer,Ответственный владелец
+89110b8b-c851-45f2-94aa-76762c1cab97,Ермил Фокич Быков,+79799242835,Ростов-на-Дону,nikita_1996,$2b$10$m.6unAMdX7r/rtesueD0RedB0aQggB/upM1qfkBFLg2Tucl3Ou0pC,seller,Ищет питомца для семьи

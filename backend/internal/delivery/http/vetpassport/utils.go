@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -24,8 +24,8 @@ func writeErrorResponse(w http.ResponseWriter, status int, err error, message st
 	})
 }
 
-func parseIDFromPath(r *http.Request) (int, error) {
-	return strconv.Atoi(mux.Vars(r)["id"])
+func parseIDFromPath(r *http.Request) (uuid.UUID, error) {
+	return uuid.Parse(mux.Vars(r)["id"])
 }
 
 func writeServiceUnavailable(w http.ResponseWriter) {

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
 
 func (pr *PetRouter) CreatePet(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +88,7 @@ func (pr *PetRouter) UpdatePet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sellerID will be taken from auth middleware later.
-	updatedPet, err := pr.PetUsecase.Update(id, 0, &updatePet)
+	updatedPet, err := pr.PetUsecase.Update(id, uuid.Nil, &updatePet)
 	if err != nil {
 		if err == models.ErrPetNotFound {
 			writeErrorResponse(w, http.StatusNotFound, err, "Питомец не найден")
@@ -113,7 +114,7 @@ func (pr *PetRouter) DeletePet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sellerID will be taken from auth middleware later.
-	err = pr.PetUsecase.Delete(id, 0)
+	err = pr.PetUsecase.Delete(id, uuid.Nil)
 	if err != nil {
 		if err == models.ErrPetNotFound {
 			writeErrorResponse(w, http.StatusNotFound, err, "Питомец не найден")
