@@ -1,6 +1,8 @@
 package usecase
 
-import "getapet-backend/internal/models"
+import ("getapet-backend/internal/models"
+"github.com/google/uuid"
+)
 
 type VetPassportUsecase struct {
 	vetPassportRepo models.VetPassportRepository
@@ -18,14 +20,14 @@ func (u *VetPassportUsecase) GetAll() ([]models.VetPassport, error) {
 	return u.vetPassportRepo.GetAll()
 }
 
-func (u *VetPassportUsecase) GetByID(id int) (*models.VetPassport, error) {
+func (u *VetPassportUsecase) GetByID(id uuid.UUID) (*models.VetPassport, error) {
 	return u.vetPassportRepo.GetByID(id)
 }
 
-func (u *VetPassportUsecase) Update(id int, passport *models.VetPassport) (*models.VetPassport, error) {
+func (u *VetPassportUsecase) Update(id uuid.UUID, passport *models.VetPassport) (*models.VetPassport, error) {
 	return u.vetPassportRepo.Update(id, passport)
 }
 
-func (u *VetPassportUsecase) Delete(id int) error {
+func (u *VetPassportUsecase) Delete(id uuid.UUID) error {
 	return u.vetPassportRepo.Delete(id)
 }

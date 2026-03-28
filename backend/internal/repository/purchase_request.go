@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
 
 type PurchaseRequestRepository struct {
@@ -23,22 +24,22 @@ func (r *PurchaseRequestRepository) GetAll() ([]models.PurchaseRequest, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PurchaseRequestRepository) GetByID(_ int) (*models.PurchaseRequest, error) {
+func (r *PurchaseRequestRepository) GetByID(_ uuid.UUID) (*models.PurchaseRequest, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PurchaseRequestRepository) GetBySellerID(_ int) ([]models.PurchaseRequest, error) {
+func (r *PurchaseRequestRepository) GetBySellerID(_ uuid.UUID) ([]models.PurchaseRequest, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PurchaseRequestRepository) GetByPetID(_ int) ([]models.PurchaseRequest, error) {
+func (r *PurchaseRequestRepository) GetByPetID(_ uuid.UUID) ([]models.PurchaseRequest, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PurchaseRequestRepository) UpdateStatus(_ int, _ string) (*models.PurchaseRequest, error) {
+func (r *PurchaseRequestRepository) UpdateStatus(_ uuid.UUID, _ string) (*models.PurchaseRequest, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PurchaseRequestRepository) Delete(_ int) error {
+func (r *PurchaseRequestRepository) Delete(_ uuid.UUID) error {
 	return errors.New("not implemented")
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
 
 type PetRepository struct {
@@ -23,22 +24,22 @@ func (r *PetRepository) GetAll() ([]models.Pet, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PetRepository) GetByID(_ int) (*models.Pet, error) {
+func (r *PetRepository) GetByID(_ uuid.UUID) (*models.Pet, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PetRepository) GetBySellerID(_ int) ([]models.Pet, error) {
+func (r *PetRepository) GetBySellerID(_ uuid.UUID) ([]models.Pet, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PetRepository) Update(_ int, _ *models.Pet) (*models.Pet, error) {
+func (r *PetRepository) Update(_ uuid.UUID, _ *models.Pet) (*models.Pet, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (r *PetRepository) Delete(_ int) error {
+func (r *PetRepository) Delete(_ uuid.UUID) error {
 	return errors.New("not implemented")
 }
 
-func (r *PetRepository) CheckBelonging(_, _ int) (bool, error) {
+func (r *PetRepository) CheckBelonging(_, _ uuid.UUID) (bool, error) {
 	return false, errors.New("not implemented")
 }

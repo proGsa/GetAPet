@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
 
 func (pr *PurchaseRequestRouter) CreatePurchaseRequest(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +90,7 @@ func (pr *PurchaseRequestRouter) UpdatePurchaseRequestStatus(w http.ResponseWrit
 	}
 
 	// sellerID will be taken from auth middleware later.
-	updatedRequest, err := pr.PurchaseRequestUsecase.UpdateStatus(id, 0, payload.Status)
+	updatedRequest, err := pr.PurchaseRequestUsecase.UpdateStatus(id, uuid.Nil, payload.Status)
 	if err != nil {
 		if err == models.ErrPurchaseRequestNotFound {
 			writeErrorResponse(w, http.StatusNotFound, err, "Заявка не найдена")
@@ -115,7 +116,7 @@ func (pr *PurchaseRequestRouter) DeletePurchaseRequest(w http.ResponseWriter, r 
 	}
 
 	// sellerID will be taken from auth middleware later.
-	err = pr.PurchaseRequestUsecase.Delete(id, 0)
+	err = pr.PurchaseRequestUsecase.Delete(id, uuid.Nil)
 	if err != nil {
 		if err == models.ErrPurchaseRequestNotFound {
 			writeErrorResponse(w, http.StatusNotFound, err, "Заявка не найдена")

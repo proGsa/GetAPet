@@ -1,9 +1,11 @@
 package models
 
-import "errors"
+import ("errors"
+	"github.com/google/uuid"
+)
 
 type User struct {
-	ID              int    `json:"id" db:"id"`
+	ID              uuid.UUID    `json:"id" db:"id"`
 	FIO             string `json:"fio" db:"fio"`
 	TelephoneNumber string `json:"telephone_number" db:"telephone_number"`
 	City            string `json:"city" db:"city"`
@@ -16,19 +18,19 @@ type User struct {
 type UserRepository interface {
 	Create(user *User) (*User, error)
 	GetAll() ([]User, error)
-	GetByID(id int) (*User, error)
+	GetByID(id uuid.UUID) (*User, error)
 	GetByLogin(login string) (*User, error)
-	Update(id int, user *User) (*User, error)
-	Delete(id int) error
+	Update(id uuid.UUID, user *User) (*User, error)
+	Delete(id uuid.UUID) error
 }
 
 type UserService interface {
 	Create(user *User) (*User, error)
 	GetAll() ([]User, error)
-	GetByID(id int) (*User, error)
+	GetByID(id uuid.UUID) (*User, error)
 	GetByLogin(login string) (*User, error)
-	Update(id int, user *User) (*User, error)
-	Delete(id int) error
+	Update(id uuid.UUID, user *User) (*User, error)
+	Delete(id uuid.UUID) error
 }
 
 var (
