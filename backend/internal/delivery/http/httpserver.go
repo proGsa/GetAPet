@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	_ "getapet-backend/docs"
 	"getapet-backend/internal/delivery/http/pet"
@@ -59,7 +60,7 @@ func setupRoutes(db *sql.DB) *mux.Router {
 
 	api := router.PathPrefix("/api").Subrouter()
 
-	userRouter := user.NewUserRouter(userUsecase)
+	userRouter := user.NewUserRouter(userUsecase, os.Getenv("JWT_SECRET"))
 	userRouter.SetupRoutes(api)
 
 	petRouter := pet.NewPetRouter(petUsecase)

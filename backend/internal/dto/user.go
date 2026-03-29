@@ -14,6 +14,10 @@ type LoginResponse struct {
 	ID      string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
 }
 
+type LogoutResponse struct {
+	Message string `json:"message" example:"Успешный выход из системы"`
+}
+
 type CreateUserRequest struct {
 	FIO             string `json:"fio" validate:"required,min=1,max=255" example:"Петрова Мария Сергеевна"`
 	TelephoneNumber string `json:"telephone_number" validate:"required,min=5,max=20" example:"+79998887766"`

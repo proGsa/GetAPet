@@ -4,33 +4,7 @@ definitions:
       status:
         type: string
     type: object
-  delivery_http_pet.ErrorResponse:
-    properties:
-      error:
-        type: string
-      message:
-        type: string
-    type: object
-  delivery_http_purchaserequest.ErrorResponse:
-    properties:
-      error:
-        type: string
-      message:
-        type: string
-    type: object
-  delivery_http_purchaserequest.UpdatePurchaseRequestStatusRequest:
-    properties:
-      status:
-        type: string
-    type: object
   delivery_http_user.ErrorResponse:
-    properties:
-      error:
-        type: string
-      message:
-        type: string
-    type: object
-  delivery_http_vetpassport.ErrorResponse:
     properties:
       error:
         type: string
@@ -174,394 +148,12 @@ definitions:
         example: ivan_ivanov
         type: string
     type: object
-  models.Pet:
-    properties:
-      breed:
-        type: string
-      color:
-        type: string
-      good_with_animals:
-        type: boolean
-      good_with_children:
-        type: boolean
-      id:
-        type: string
-      is_active:
-        type: boolean
-      pedigree:
-        type: boolean
-      pet_age:
-        type: integer
-      pet_description:
-        type: string
-      pet_gender:
-        type: string
-      pet_name:
-        type: string
-      price:
-        type: number
-      seller_id:
-        type: string
-      species:
-        type: string
-      vet_passport_id:
-        type: string
-    type: object
-  models.PurchaseRequest:
-    properties:
-      id:
-        type: string
-      pet_id:
-        type: string
-      request_date:
-        type: string
-      seller_id:
-        type: string
-      status:
-        type: string
-    type: object
-  models.VetPassport:
-    properties:
-      chipping:
-        type: boolean
-      health_issues:
-        type: string
-      id:
-        type: string
-      parasite_treatments:
-        type: string
-      sterilization:
-        type: boolean
-      vaccinations:
-        type: string
-    type: object
 info:
   contact: {}
   description: An aggregator of pet lists from shelters and private individuals.
   title: GetAPet Backend API
   version: "1.0"
 paths:
-  /api/pets:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Pet'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-      summary: List pets
-      tags:
-      - pets
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Pet payload
-        in: body
-        name: pet
-        required: true
-        schema:
-          $ref: '#/definitions/models.Pet'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Pet'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-      summary: Create pet
-      tags:
-      - pets
-  /api/pets/{id}:
-    delete:
-      parameters:
-      - description: Pet ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-      summary: Delete pet
-      tags:
-      - pets
-    get:
-      parameters:
-      - description: Pet ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Pet'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-      summary: Get pet by ID
-      tags:
-      - pets
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: Pet ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Pet payload
-        in: body
-        name: pet
-        required: true
-        schema:
-          $ref: '#/definitions/models.Pet'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Pet'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
-      summary: Update pet
-      tags:
-      - pets
-  /api/purchase-requests:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.PurchaseRequest'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-      summary: List purchase requests
-      tags:
-      - purchase-requests
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Purchase request payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.PurchaseRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.PurchaseRequest'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-      summary: Create purchase request
-      tags:
-      - purchase-requests
-  /api/purchase-requests/{id}:
-    delete:
-      parameters:
-      - description: Purchase request ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-      summary: Delete purchase request
-      tags:
-      - purchase-requests
-    get:
-      parameters:
-      - description: Purchase request ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.PurchaseRequest'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-      summary: Get purchase request by ID
-      tags:
-      - purchase-requests
-  /api/purchase-requests/{id}/status:
-    patch:
-      consumes:
-      - application/json
-      parameters:
-      - description: Purchase request ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Status payload
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/delivery_http_purchaserequest.UpdatePurchaseRequestStatusRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.PurchaseRequest'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
-      summary: Update purchase request status
-      tags:
-      - purchase-requests
   /api/users:
     get:
       produces:
@@ -581,6 +173,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/delivery_http_user.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Get all users
       tags:
       - users
@@ -643,6 +237,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/delivery_http_user.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Delete user
       tags:
       - users
@@ -676,6 +272,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/delivery_http_user.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Get user by ID
       tags:
       - users
@@ -717,6 +315,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/delivery_http_user.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Update user
       tags:
       - users
@@ -757,166 +357,6 @@ paths:
       summary: Login user
       tags:
       - users
-  /api/vet-passports:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.VetPassport'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-      summary: List vet passports
-      tags:
-      - vet-passports
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Vet passport payload
-        in: body
-        name: passport
-        required: true
-        schema:
-          $ref: '#/definitions/models.VetPassport'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.VetPassport'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-      summary: Create vet passport
-      tags:
-      - vet-passports
-  /api/vet-passports/{id}:
-    delete:
-      parameters:
-      - description: Vet passport ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-      summary: Delete vet passport
-      tags:
-      - vet-passports
-    get:
-      parameters:
-      - description: Vet passport ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.VetPassport'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-      summary: Get vet passport by ID
-      tags:
-      - vet-passports
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: Vet passport ID (UUID)
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Vet passport payload
-        in: body
-        name: passport
-        required: true
-        schema:
-          $ref: '#/definitions/models.VetPassport'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.VetPassport'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
-      summary: Update vet passport
-      tags:
-      - vet-passports
   /health:
     get:
       produces:
@@ -929,4 +369,10 @@ paths:
       summary: Check service health
       tags:
       - system
+securityDefinitions:
+  BearerAuth:
+    description: Enter only JWT token (without Bearer prefix)
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

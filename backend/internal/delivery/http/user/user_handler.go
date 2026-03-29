@@ -3,9 +3,12 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"getapet-backend/internal/dto"
 	"getapet-backend/internal/models"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // CreateUser godoc
@@ -80,13 +83,49 @@ func (ur *UserRouter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, dto.LoginResponseFromDomain(*user, "TODO jwt token"))
+	token, err := ur.generateJWT(*user)
+	if err != nil {
+		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось сгенерировать токен")
+		return
+	}
+
+	writeSuccessResponse(w, http.StatusOK, dto.LoginResponseFromDomain(*user, token))
+}
+
+// // Logout godoc
+// // @Summary Logout user
+// // @Tags users
+// // @Produce json
+// // @Security BearerAuth
+// // @Success 200 {object} dto.LogoutResponse
+// // @Failure 401 {object} ErrorResponse
+// // @Failure 503 {object} ErrorResponse
+// // @Router /api/users/logout [post]
+// func (ur *UserRouter) Logout(w http.ResponseWriter, _ *http.Request) {
+// 	if ur.UserUsecase == nil {
+// 		writeServiceUnavailable(w)
+// 		return
+// 	}
+// 
+// 	writeSuccessResponse(w, http.StatusOK, dto.LogoutResponse{Message: "Успешный выход из системы"})
+// }
+
+func (ur *UserRouter) generateJWT(user models.User) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": user.ID.String(),
+		"login":   user.UserLogin,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(ur.JWTSecret))
 }
 
 // GetUsers godoc
 // @Summary Get all users
 // @Tags users
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} dto.UserResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure 503 {object} ErrorResponse
@@ -111,6 +150,7 @@ func (ur *UserRouter) GetUsers(w http.ResponseWriter, _ *http.Request) {
 // @Tags users
 // @Produce json
 // @Param id path string true "User ID (UUID)"
+// @Security BearerAuth
 // @Success 200 {object} dto.UserResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
@@ -149,6 +189,7 @@ func (ur *UserRouter) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "User ID (UUID)"
 // @Param user body dto.UpdateUserRequest true "User data"
+// @Security BearerAuth
 // @Success 200 {object} dto.UserResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
@@ -199,6 +240,7 @@ func (ur *UserRouter) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Summary Delete user
 // @Tags users
 // @Param id path string true "User ID (UUID)"
+// @Security BearerAuth
 // @Success 204 "No Content"
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
