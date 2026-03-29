@@ -4,26 +4,15 @@ import ("errors"
 	"github.com/google/uuid"
 )
 
-// type UserDomain struct {
-// 	ID              uuid.UUID    `json:"id" `
-// 	FIO             string `json:"fio"`
-// 	TelephoneNumber string `json:"telephone_number"`
-// 	City            string `json:"city" `
-// 	UserLogin       string `json:"user_login"`
-// 	UserPassword    string `json:"user_password" `
-// 	Status          string `json:"status"`
-// 	UserDescription string `json:"user_description"`
-// }
-
 type User struct {
-	ID              uuid.UUID    
-	FIO             string 
-	TelephoneNumber string 
-	City            string
-	UserLogin       string 
-	UserPassword    string
-	Status          string
-	UserDescription string 
+	ID              uuid.UUID    `json:"id" db:"id"`
+	FIO             string `json:"fio" db:"fio"`
+	TelephoneNumber string `json:"telephone_number" db:"telephone_number"`
+	City            string `json:"city" db:"city"`
+	UserLogin       string `json:"user_login" db:"user_login"`
+	UserPassword    string `json:"user_password" db:"user_password"`
+	Status          string `json:"status" db:"status"`
+	UserDescription string `json:"user_description" db:"user_description"`
 }
 
 

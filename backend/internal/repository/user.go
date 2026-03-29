@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"getapet-backend/internal/models"
-	entities "getapet-backend/internal/repository/models"
 	"github.com/google/uuid"
 )
 
@@ -24,32 +23,30 @@ func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 		RETURNING id, fio, telephone_number, city, user_login, user_password, status, user_description
 	`
 
-	userDB := entities.UserFromDomain(*user)
 	err := r.db.QueryRow(
 		query,
-		userDB.FIO,
-		userDB.TelephoneNumber,
-		userDB.City,
-		userDB.UserLogin,
-		userDB.UserPassword,
-		userDB.Status,
-		userDB.UserDescription,
+		user.FIO,
+		user.TelephoneNumber,
+		user.City,
+		user.UserLogin,
+		user.UserPassword,
+		user.Status,
+		user.UserDescription,
 	).Scan(
-		&userDB.ID,
-		&userDB.FIO,
-		&userDB.TelephoneNumber,
-		&userDB.City,
-		&userDB.UserLogin,
-		&userDB.UserPassword,
-		&userDB.Status,
-		&userDB.UserDescription,
+		&user.ID,
+		&user.FIO,
+		&user.TelephoneNumber,
+		&user.City,
+		&user.UserLogin,
+		&user.UserPassword,
+		&user.Status,
+		&user.UserDescription,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	userDomain := entities.UserToDomain(userDB)
-	return &userDomain, nil
+	return user, nil
 }
 
 func (r *UserRepository) GetAll() ([]models.User, error) {
@@ -65,31 +62,30 @@ func (r *UserRepository) GetAll() ([]models.User, error) {
 	}
 	defer rows.Close()
 
-	userEntities := make([]entities.UserDB, 0)
+	users := make([]models.User, 0)
 	for rows.Next() {
-		var userDB entities.UserDB
+		var user models.User
 		if err := rows.Scan(
-			&userDB.ID,
-			&userDB.FIO,
-			&userDB.TelephoneNumber,
-			&userDB.City,
-			&userDB.UserLogin,
-			&userDB.UserPassword,
-			&userDB.Status,
-			&userDB.UserDescription,
+			&user.ID,
+			&user.FIO,
+			&user.TelephoneNumber,
+			&user.City,
+			&user.UserLogin,
+			&user.UserPassword,
+			&user.Status,
+			&user.UserDescription,
 		); err != nil {
 			return nil, err
 		}
-		userEntities = append(userEntities, userDB)
+		users = append(users, user)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return entities.UsersToDomain(userEntities), nil
+	return users, nil
 }
-
 
 func (r *UserRepository) GetByID(id uuid.UUID) (*models.User, error) {
 	const query = `
@@ -98,7 +94,7 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*models.User, error) {
 		WHERE id = $1
 	`
 
-	var user entities.UserDB
+	var user models.User
 	err := r.db.QueryRow(query, id).Scan(
 		&user.ID,
 		&user.FIO,
@@ -116,10 +112,8 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*models.User, error) {
 		return nil, err
 	}
 
-	userdomain := entities.UserToDomain(user)
-	return &userdomain, nil
+	return &user, nil
 }
-
 
 func (r *UserRepository) GetByLogin(login string) (*models.User, error) {
 	const query = `
@@ -128,16 +122,16 @@ func (r *UserRepository) GetByLogin(login string) (*models.User, error) {
 		WHERE user_login = $1
 	`
 
-	var userDB entities.UserDB
+	var user models.User
 	err := r.db.QueryRow(query, login).Scan(
-		&userDB.ID,
-		&userDB.FIO,
-		&userDB.TelephoneNumber,
-		&userDB.City,
-		&userDB.UserLogin,
-		&userDB.UserPassword,
-		&userDB.Status,
-		&userDB.UserDescription,
+		&user.ID,
+		&user.FIO,
+		&user.TelephoneNumber,
+		&user.City,
+		&user.UserLogin,
+		&user.UserPassword,
+		&user.Status,
+		&user.UserDescription,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -146,8 +140,7 @@ func (r *UserRepository) GetByLogin(login string) (*models.User, error) {
 		return nil, err
 	}
 
-	userDomain := entities.UserToDomain(userDB)
-	return &userDomain, nil
+	return &user, nil
 }
 
 func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, error) {
@@ -158,26 +151,25 @@ func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, 
 		RETURNING id, fio, telephone_number, city, user_login, user_password, status, user_description
 	`
 
-	userDB := entities.UserFromDomain(*user)
 	err := r.db.QueryRow(
 		query,
-		userDB.FIO,
-		userDB.TelephoneNumber,
-		userDB.City,
-		userDB.UserLogin,
-		userDB.UserPassword,
-		userDB.Status,
-		userDB.UserDescription,
+		user.FIO,
+		user.TelephoneNumber,
+		user.City,
+		user.UserLogin,
+		user.UserPassword,
+		user.Status,
+		user.UserDescription,
 		id,
 	).Scan(
-		&userDB.ID,
-		&userDB.FIO,
-		&userDB.TelephoneNumber,
-		&userDB.City,
-		&userDB.UserLogin,
-		&userDB.UserPassword,
-		&userDB.Status,
-		&userDB.UserDescription,
+		&user.ID,
+		&user.FIO,
+		&user.TelephoneNumber,
+		&user.City,
+		&user.UserLogin,
+		&user.UserPassword,
+		&user.Status,
+		&user.UserDescription,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -186,8 +178,7 @@ func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, 
 		return nil, err
 	}
 
-	userDomain := entities.UserToDomain(userDB)
-	return &userDomain, nil
+	return user, nil
 }
 
 func (r *UserRepository) Delete(id uuid.UUID) error {
