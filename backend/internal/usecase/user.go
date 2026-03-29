@@ -37,6 +37,11 @@ func (u *UserUsecase) GetByLogin(login string) (*models.User, error) {
 }
 
 func (u *UserUsecase) Update(id uuid.UUID, user *models.User) (*models.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.UserPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	user.UserPassword = string(hashedPassword)
 	return u.userRepo.Update(id, user)
 }
 
@@ -44,18 +49,18 @@ func (u *UserUsecase) Delete(id uuid.UUID) error {
 	return u.userRepo.Delete(id)
 }
 
-func (u *UserUsecase) Login(login string, password string) error {
+func (u *UserUsecase) Login(login string, password string) (*models.User, error)  {
 	user, err := u.userRepo.GetByLogin(login)
 	if err != nil {
 		if err == models.ErrUserNotFound {
-			return models.ErrInvalidCredentials
+			return nil,models.ErrInvalidCredentials
 		}
-		return err
+		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.UserPassword), []byte(password)); err != nil {
-		return models.ErrInvalidCredentials
+		return nil, models.ErrInvalidCredentials
 	}
 
-	return nil
+	return user, nil
 }

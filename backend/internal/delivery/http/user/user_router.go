@@ -18,6 +18,7 @@ func (ur *UserRouter) SetupRoutes(router *mux.Router) {
 	userRouter := router.PathPrefix("/users").Subrouter()
 
 	userRouter.HandleFunc("", ur.CreateUser).Methods("POST", "OPTIONS")
+	userRouter.HandleFunc("/login", ur.Login).Methods("POST", "OPTIONS")
 	userRouter.HandleFunc("", ur.GetUsers).Methods("GET")
 	userRouter.HandleFunc("/{id}", ur.GetUser).Methods("GET")
 	userRouter.HandleFunc("/{id}", ur.UpdateUser).Methods("PUT", "OPTIONS")

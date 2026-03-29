@@ -33,10 +33,11 @@ type UserService interface {
 	GetByLogin(login string) (*User, error)
 	Update(id uuid.UUID, user *User) (*User, error)
 	Delete(id uuid.UUID) error
-	Login(login string, password string) error
+	Login(login string, password string) (*User, error)
 }
 
 var (
 	ErrUserNotFound         = errors.New("user not found")
 	ErrInvalidCredentials   = errors.New("invalid credentials")
 )
+
