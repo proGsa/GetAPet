@@ -196,6 +196,34 @@ func TestPetRepositoryIntegration(t *testing.T) {
 			t.Fatal("expected true")
 		}
 	})
+	t.Run("Delete", func(t *testing.T) {
+		clearPetTable(t, db)
+	
+		pet, err := repo.Create(&models.Pet{
+			VetPassportID: uuid.New(),
+			SellerID:      uuid.New(),
+			PetName:       "ToDelete",
+			Species:       "dog",
+			PetAge:        2,
+			IsActive:      true,
+			Price:         50,
+		})
+		if err != nil {
+			t.Fatalf("create pet: %v", err)
+		}
+	
+		// delete
+		err = repo.Delete(pet.ID)
+		if err != nil {
+			t.Fatalf("delete: %v", err)
+		}
+	
+		// check that it's gone
+		_, err = repo.GetByID(pet.ID)
+		if !errors.Is(err, repository.ErrPetNotFound) {
+			t.Fatalf("expected ErrPetNotFound, got %v", err)
+		}
+	})
 }
 
 func setupTestPostgresPet(t *testing.T, ctx context.Context) (*sql.DB, func()) {
