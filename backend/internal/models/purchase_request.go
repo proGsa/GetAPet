@@ -41,6 +41,11 @@ type PurchaseRequestService interface {
 }
 
 var (
-	ErrPurchaseRequestNotFound  = errors.New("purchase request not found")
-	ErrPurchaseRequestForbidden = errors.New("purchase request access denied")
+	ErrPurchaseRequestNotFound              = errors.New("purchase request not found")
+	ErrPurchaseRequestForbidden             = errors.New("purchase request access denied")
+	ErrPurchaseRequestStatusRequired        = errors.New("purchase request status is required")
+	ErrPurchaseRequestPetNotAvailable       = errors.New("pet is not available for purchase")
+	ErrPurchaseRequestDuplicatePetBuyer     = errors.New("duplicate purchase request for pet and buyer")
+	ErrPurchaseRequestAlreadyApprovedForPet = errors.New("another request for this pet is already approved")
+	ErrPurchaseRequestUniqueViolation       = errors.New("purchase request unique constraint violated")
 )

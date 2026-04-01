@@ -20,6 +20,8 @@ definitions:
     type: object
   dto.CreatePurchaseRequest:
     properties:
+      buyer_id:
+        type: string
       pet_id:
         type: string
     type: object

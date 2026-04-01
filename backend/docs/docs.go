@@ -862,6 +862,9 @@ const docTemplate = `{
         "dto.CreatePurchaseRequest": {
             "type": "object",
             "properties": {
+                "buyer_id": {
+                    "type": "string"
+                },
                 "pet_id": {
                     "type": "string"
                 }

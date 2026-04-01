@@ -2,11 +2,36 @@ package purchaserequest
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"getapet-backend/internal/dto"
 	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
+
+func writePurchaseRequestMappedError(w http.ResponseWriter, err error, defaultMessage string) {
+	switch {
+	case errors.Is(err, models.ErrPurchaseRequestNotFound):
+		writeErrorResponse(w, http.StatusNotFound, err, "Заявка на покупку не найдена")
+	case errors.Is(err, models.ErrPurchaseRequestForbidden):
+		writeErrorResponse(w, http.StatusForbidden, err, "Заявка принадлежит другому пользователю, поэтому у вас нет прав на это действие")
+	case errors.Is(err, models.ErrPetNotFound):
+		writeErrorResponse(w, http.StatusNotFound, err, "Питомец не найден")
+	case errors.Is(err, models.ErrPurchaseRequestStatusRequired):
+		writeErrorResponse(w, http.StatusBadRequest, err, "Необходимо передать значение статуса")
+	case errors.Is(err, models.ErrPurchaseRequestPetNotAvailable):
+		writeErrorResponse(w, http.StatusConflict, err, "Питомец недоступен для покупки")
+	case errors.Is(err, models.ErrPurchaseRequestDuplicatePetBuyer):
+		writeErrorResponse(w, http.StatusConflict, err, "Повторная заявка покупателя на одного и того же питомца запрещена")
+	case errors.Is(err, models.ErrPurchaseRequestAlreadyApprovedForPet):
+		writeErrorResponse(w, http.StatusConflict, err, "Продавец уже одобрил заявку на этого питомца другому покупателю")
+	case errors.Is(err, models.ErrPurchaseRequestUniqueViolation):
+		writeErrorResponse(w, http.StatusConflict, err, "Операция невозможна: запись с такими данными уже существует")
+	default:
+		writeErrorResponse(w, http.StatusInternalServerError, err, defaultMessage)
+	}
+}
 
 // CreatePurchaseRequest godoc
 // @Summary Create purchase request
@@ -29,20 +54,22 @@ func (pr *PurchaseRequestRouter) CreatePurchaseRequest(w http.ResponseWriter, r 
 
 	var payload dto.CreatePurchaseRequest
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid JSON format")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
+		return
+	}
+	if payload.PetID == uuid.Nil {
+		writeErrorResponse(w, http.StatusBadRequest, errors.New("pet_id is required"), "Некорректный pet_id")
+		return
+	}
+	if payload.BuyerID == uuid.Nil {
+		writeErrorResponse(w, http.StatusBadRequest, errors.New("buyer_id is required"), "Некорректный buyer_id")
 		return
 	}
 
-	buyerID, err := userIDFromContext(r)
-	if err != nil {
-		writeErrorResponse(w, http.StatusUnauthorized, err, "Invalid user_id in token")
-		return
-	}
-
-	createPurchaseRequest := dto.CreatePurchaseRequestFromDTO(payload, buyerID)
+	createPurchaseRequest := dto.CreatePurchaseRequestFromDTO(payload)
 	createdPurchaseRequest, err := pr.PurchaseRequestUsecase.Create(&createPurchaseRequest)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to create purchase request")
+		writePurchaseRequestMappedError(w, err, "Не удалось создать заявку на покупку")
 		return
 	}
 
@@ -67,7 +94,7 @@ func (pr *PurchaseRequestRouter) GetPurchaseRequests(w http.ResponseWriter, _ *h
 
 	requests, err := pr.PurchaseRequestUsecase.GetAll()
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to get purchase requests")
+		writePurchaseRequestMappedError(w, err, "Не удалось получить заявки на покупку")
 		return
 	}
 
@@ -94,13 +121,13 @@ func (pr *PurchaseRequestRouter) GetPurchaseRequestsByBuyer(w http.ResponseWrite
 
 	buyerID, err := parseIDFromPath(r)
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid buyer id")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный buyer id")
 		return
 	}
 
 	requests, err := pr.PurchaseRequestUsecase.GetByBuyerID(buyerID)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to get buyer requests")
+		writePurchaseRequestMappedError(w, err, "Не удалось получить заявки покупателя")
 		return
 	}
 
@@ -127,13 +154,13 @@ func (pr *PurchaseRequestRouter) GetPurchaseRequestsBySeller(w http.ResponseWrit
 
 	sellerID, err := parseIDFromPath(r)
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid seller id")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный seller id")
 		return
 	}
 
 	requests, err := pr.PurchaseRequestUsecase.GetBySellerID(sellerID)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to get seller requests")
+		writePurchaseRequestMappedError(w, err, "Не удалось получить заявки продавца")
 		return
 	}
 
@@ -160,13 +187,13 @@ func (pr *PurchaseRequestRouter) GetPurchaseRequestsByPet(w http.ResponseWriter,
 
 	petID, err := parseIDFromPathParam(r, "pet_id")
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid pet_id")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный pet_id")
 		return
 	}
 
 	requests, err := pr.PurchaseRequestUsecase.GetByPetID(petID)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to get pet requests")
+		writePurchaseRequestMappedError(w, err, "Не удалось получить заявки по питомцу")
 		return
 	}
 
@@ -194,17 +221,13 @@ func (pr *PurchaseRequestRouter) GetPurchaseRequest(w http.ResponseWriter, r *ht
 
 	id, err := parseIDFromPath(r)
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid id")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный id")
 		return
 	}
 
 	request, err := pr.PurchaseRequestUsecase.GetByID(id)
 	if err != nil {
-		if err == models.ErrPurchaseRequestNotFound {
-			writeErrorResponse(w, http.StatusNotFound, err, "Purchase request not found")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to get purchase request")
+		writePurchaseRequestMappedError(w, err, "Не удалось получить заявку на покупку")
 		return
 	}
 
@@ -235,33 +258,26 @@ func (pr *PurchaseRequestRouter) UpdatePurchaseRequestStatus(w http.ResponseWrit
 
 	id, err := parseIDFromPath(r)
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid id")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный id")
 		return
 	}
 
 	var payload dto.UpdatePurchaseRequestStatus
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid JSON format")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
 		return
 	}
 
-	sellerID, err := userIDFromContext(r)
-	if err != nil {
-		writeErrorResponse(w, http.StatusUnauthorized, err, "Invalid user_id in token")
-		return
-	}
+	// sellerID, err := userIDFromContext(r)
+	// if err != nil {
+	// 	writeErrorResponse(w, http.StatusUnauthorized, err, "Некорректный user_id в токене")
+	// 	return
+	// }
 
-	updatedRequest, err := pr.PurchaseRequestUsecase.UpdateStatus(id, sellerID, payload.Status)
+	//updatedRequest, err := pr.PurchaseRequestUsecase.UpdateStatus(id, sellerID, payload.Status)
+	updatedRequest, err := pr.PurchaseRequestUsecase.UpdateStatus(id, uuid.Nil, payload.Status)
 	if err != nil {
-		if err == models.ErrPurchaseRequestNotFound {
-			writeErrorResponse(w, http.StatusNotFound, err, "Purchase request not found")
-			return
-		}
-		if err == models.ErrPurchaseRequestForbidden {
-			writeErrorResponse(w, http.StatusForbidden, err, "Not enough permissions to update request")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to update purchase request status")
+		writePurchaseRequestMappedError(w, err, "Не удалось обновить статус заявки")
 		return
 	}
 
@@ -290,27 +306,20 @@ func (pr *PurchaseRequestRouter) DeletePurchaseRequest(w http.ResponseWriter, r 
 
 	id, err := parseIDFromPath(r)
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, err, "Invalid id")
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный id")
 		return
 	}
 
-	buyerID, err := userIDFromContext(r)
-	if err != nil {
-		writeErrorResponse(w, http.StatusUnauthorized, err, "Invalid user_id in token")
-		return
-	}
+	// buyerID, err := userIDFromContext(r)
+	// if err != nil {
+	// 	writeErrorResponse(w, http.StatusUnauthorized, err, "Некорректный user_id в токене")
+	// 	return
+	// }
 
-	err = pr.PurchaseRequestUsecase.Delete(id, buyerID)
+	//err = pr.PurchaseRequestUsecase.Delete(id, buyerID)
+	err = pr.PurchaseRequestUsecase.Delete(id, uuid.Nil)
 	if err != nil {
-		if err == models.ErrPurchaseRequestNotFound {
-			writeErrorResponse(w, http.StatusNotFound, err, "Purchase request not found")
-			return
-		}
-		if err == models.ErrPurchaseRequestForbidden {
-			writeErrorResponse(w, http.StatusForbidden, err, "Not enough permissions to delete request")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Failed to delete purchase request")
+		writePurchaseRequestMappedError(w, err, "Не удалось удалить заявку на покупку")
 		return
 	}
 

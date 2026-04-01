@@ -16,8 +16,8 @@ type PurchaseRequestRepository struct {
 }
 
 const (
-	uqPurchaseRequestPetBuyer        = "uq_purchase_request_pet_buyer"
-	uxOneApprovedRequestPerPet       = "ux_purchase_request_one_approved_per_pet"
+	uqPurchaseRequestPetBuyer  = "uq_purchase_request_pet_buyer"
+	uxOneApprovedRequestPerPet = "ux_purchase_request_one_approved_per_pet"
 )
 
 func mapPurchaseRequestConstraintError(err error) error {
@@ -28,13 +28,13 @@ func mapPurchaseRequestConstraintError(err error) error {
 
 	switch pqErr.Constraint {
 	case uqPurchaseRequestPetBuyer:
-		return errors.New("Повторная заявка покупателя на одного и того же питомца запрещена")
+		return models.ErrPurchaseRequestDuplicatePetBuyer
 	case uxOneApprovedRequestPerPet:
-		return errors.New("Продавец уже одобрил заявку на покупку этого питомца другому пользователю")
+		return models.ErrPurchaseRequestAlreadyApprovedForPet
 	}
 
 	if pqErr.Code == "23505" {
-		return errors.New("Нарушено ограничение уникальности данных")
+		return models.ErrPurchaseRequestUniqueViolation
 	}
 
 	return err
@@ -65,7 +65,7 @@ func (r *PurchaseRequestRepository) Create(request *models.PurchaseRequest) (*mo
 	}
 
 	if !isActive {
-		return nil, errors.New("Питомец недоступен для покупки")
+		return nil, models.ErrPurchaseRequestPetNotAvailable
 	}
 
 	if strings.TrimSpace(request.Status) == "" {
@@ -277,7 +277,7 @@ func (r *PurchaseRequestRepository) requestExistsTx(tx *sql.Tx, id uuid.UUID) (b
 func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*models.PurchaseRequest, error) {
 	normalizedStatus := strings.ToLower(strings.TrimSpace(status))
 	if normalizedStatus == "" {
-		return nil, errors.New("статус обязателен")
+		return nil, models.ErrPurchaseRequestStatusRequired
 	}
 
 	tx, err := r.db.Begin()
@@ -319,7 +319,7 @@ func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*
 			return nil, err
 		}
 		if !isActive && req.Status != "approved" {
-			return nil, errors.New("Питомец недоступен для покупки")
+			return nil, models.ErrPurchaseRequestPetNotAvailable
 		}
 	}
 
@@ -345,7 +345,6 @@ func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*
 		return nil, mapPurchaseRequestConstraintError(err)
 	}
 
-	
 	switch normalizedStatus {
 	/* если заявка одобрена, то оставшиеся заявки со статусом pending надо перевести в статус rejected
 	и для сделать объявление питомца неактивным*/
@@ -370,7 +369,7 @@ func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*
 			//было заявка одобрена, так что ничего в таблице pet менять не надо, то есть peisactive уже и так равен false
 			break
 		}
-		/* заявка была до этого одобрена, но стала rejected/penging => надо проверить есть ли 
+		/* заявка была до этого одобрена, но стала rejected/penging => надо проверить есть ли
 		approved заявки: если есть, то оставить is_active у питомца равным false, иначе - равным true*/
 		var hasApproved bool
 		//проверка на наличие активных других заявок
@@ -397,7 +396,7 @@ func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*
 func (r *PurchaseRequestRepository) UpdateStatusBySeller(id uuid.UUID, sellerID uuid.UUID, status string) (*models.PurchaseRequest, error) {
 	normalizedStatus := strings.ToLower(strings.TrimSpace(status))
 	if normalizedStatus == "" {
-		return nil, errors.New("статус обязателен")
+		return nil, models.ErrPurchaseRequestStatusRequired
 	}
 
 	tx, err := r.db.Begin()
@@ -443,7 +442,7 @@ func (r *PurchaseRequestRepository) UpdateStatusBySeller(id uuid.UUID, sellerID 
 
 	previousStatus := req.Status
 	if normalizedStatus == "approved" && !isActive && req.Status != "approved" {
-		return nil, errors.New("Питомец недоступен для покупки")
+		return nil, models.ErrPurchaseRequestPetNotAvailable
 	}
 
 	err = tx.QueryRow(

@@ -8,7 +8,8 @@ import (
 )
 
 type CreatePurchaseRequest struct {
-	PetID uuid.UUID `json:"pet_id"`
+	PetID   uuid.UUID `json:"pet_id"`
+	BuyerID uuid.UUID `json:"buyer_id"`
 }
 
 type CreatePurchaseRequestResponse struct {
@@ -43,10 +44,10 @@ type DeletePurchaseRequestResponse struct {
 	Message string `json:"message"`
 }
 
-func CreatePurchaseRequestFromDTO(req CreatePurchaseRequest, buyerID uuid.UUID) models.PurchaseRequest {
+func CreatePurchaseRequestFromDTO(req CreatePurchaseRequest) models.PurchaseRequest {
 	return models.PurchaseRequest{
 		PetID:   req.PetID,
-		BuyerID: buyerID,
+		BuyerID: req.BuyerID,
 	}
 }
 
