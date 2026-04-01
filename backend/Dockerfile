@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["go", "run", "./cmd"]
+CMD ["sh", "-c", "swag init -d ./cmd,./internal -g main.go --parseInternal --parseDependency --parseDepth 2 -o ./docs && go run ./cmd"]
