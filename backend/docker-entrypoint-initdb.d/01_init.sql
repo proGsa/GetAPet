@@ -39,7 +39,23 @@ CREATE TABLE IF NOT EXISTS pet (
 CREATE TABLE IF NOT EXISTS purchase_request (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     pet_id UUID NOT NULL REFERENCES pet(id),
-    seller_id UUID NOT NULL REFERENCES users(id),
+    buyer_id UUID NOT NULL REFERENCES users(id),
     status VARCHAR(50) DEFAULT 'pending',
     request_date TIMESTAMP DEFAULT NOW()
 );
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'uq_purchase_request_pet_buyer'
+    ) THEN
+        ALTER TABLE purchase_request
+            ADD CONSTRAINT uq_purchase_request_pet_buyer UNIQUE (pet_id, buyer_id);
+    END IF;
+END $$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_purchase_request_one_approved_per_pet
+    ON purchase_request (pet_id)
+    WHERE status = 'approved';

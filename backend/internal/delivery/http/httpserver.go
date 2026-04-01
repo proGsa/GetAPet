@@ -69,7 +69,7 @@ func setupRoutes(db *sql.DB) *mux.Router {
 	vetPassportRouter := vetpassport.NewVetPassportRouter(vetPassportUsecase)
 	vetPassportRouter.SetupRoutes(api)
 
-	purchaseRequestRouter := purchaserequest.NewPurchaseRequestRouter(purchaseRequestUsecase)
+	purchaseRequestRouter := purchaserequest.NewPurchaseRequestRouter(purchaseRequestUsecase, os.Getenv("JWT_SECRET"))
 	purchaseRequestRouter.SetupRoutes(api)
 
 	return router

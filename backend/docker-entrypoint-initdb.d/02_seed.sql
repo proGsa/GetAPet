@@ -43,7 +43,7 @@ DELIMITER ','
 CSV HEADER
 ENCODING 'UTF8';
 
-COPY purchase_request(id, pet_id, seller_id, status, request_date) 
+COPY purchase_request(id, pet_id, buyer_id, status, request_date) 
 FROM '/docker-entrypoint-initdb.d/purchase_request.csv' 
 DELIMITER ',' 
 CSV HEADER

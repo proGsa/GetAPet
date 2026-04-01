@@ -301,7 +301,7 @@ func initPetSchema(ctx context.Context, db *sql.DB) {
 
 func clearPetTable(t *testing.T, db *sql.DB) {
 	t.Helper()
-	if _, err := db.Exec(`TRUNCATE TABLE pet`); err != nil {
+	if _, err := db.Exec(`TRUNCATE TABLE pet CASCADE`); err != nil {
 		t.Fatalf("truncate pet: %v", err)
 	}
 }

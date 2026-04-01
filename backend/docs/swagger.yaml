@@ -4,11 +4,36 @@ definitions:
       status:
         type: string
     type: object
+  delivery_http_purchaserequest.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
   delivery_http_user.ErrorResponse:
     properties:
       error:
         type: string
       message:
+        type: string
+    type: object
+  dto.CreatePurchaseRequest:
+    properties:
+      pet_id:
+        type: string
+    type: object
+  dto.CreatePurchaseRequestResponse:
+    properties:
+      buyer_id:
+        type: string
+      id:
+        type: string
+      pet_id:
+        type: string
+      request_date:
+        type: string
+      status:
         type: string
     type: object
   dto.CreateUserRequest:
@@ -53,6 +78,19 @@ definitions:
     - user_login
     - user_password
     type: object
+  dto.GetPurchaseRequestResponse:
+    properties:
+      buyer_id:
+        type: string
+      id:
+        type: string
+      pet_id:
+        type: string
+      request_date:
+        type: string
+      status:
+        type: string
+    type: object
   dto.LoginRequest:
     properties:
       user_login:
@@ -82,6 +120,24 @@ definitions:
     properties:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  dto.UpdatePurchaseRequestStatus:
+    properties:
+      status:
+        type: string
+    type: object
+  dto.UpdatePurchaseRequestStatusResponse:
+    properties:
+      buyer_id:
+        type: string
+      id:
+        type: string
+      pet_id:
+        type: string
+      request_date:
+        type: string
+      status:
         type: string
     type: object
   dto.UpdateUserRequest:
@@ -154,6 +210,307 @@ info:
   title: GetAPet Backend API
   version: "1.0"
 paths:
+  /api/purchase-requests:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetPurchaseRequestResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all purchase requests
+      tags:
+      - purchase-requests
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Purchase request payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePurchaseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatePurchaseRequestResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create purchase request
+      tags:
+      - purchase-requests
+  /api/purchase-requests/{id}:
+    delete:
+      parameters:
+      - description: Purchase request ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete purchase request
+      tags:
+      - purchase-requests
+    get:
+      parameters:
+      - description: Purchase request ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetPurchaseRequestResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get purchase request by ID
+      tags:
+      - purchase-requests
+  /api/purchase-requests/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Purchase request ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePurchaseRequestStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdatePurchaseRequestStatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update purchase request status
+      tags:
+      - purchase-requests
+  /api/purchase-requests/buyer:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetPurchaseRequestResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get purchase requests by buyer ID
+      tags:
+      - purchase-requests
+  /api/purchase-requests/pet/{pet_id}:
+    get:
+      parameters:
+      - description: Pet ID (UUID)
+        in: path
+        name: pet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetPurchaseRequestResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get purchase requests by pet ID
+      tags:
+      - purchase-requests
+  /api/purchase-requests/seller:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetPurchaseRequestResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_purchaserequest.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get purchase requests by seller ID
+      tags:
+      - purchase-requests
   /api/users:
     get:
       produces:

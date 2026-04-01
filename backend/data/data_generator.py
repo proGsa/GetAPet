@@ -240,8 +240,39 @@ def create_purchase_requests():
     if not pets:
         raise ValueError("Сначала нужно создать pets.")
 
-    for _ in range(NUM_PURCHASE_REQUESTS):
+    buyer_ids = [user["id"] for user in users if user["status"] == "buyer"]
+    if not buyer_ids:
+        raise ValueError("Нет пользователей со статусом buyer для генерации purchase_request.")
+
+    used_pet_buyer_pairs = set()
+    approved_pet_ids = set()
+    attempts = 0
+    max_attempts = NUM_PURCHASE_REQUESTS * 30
+
+    while len(purchase_requests) < NUM_PURCHASE_REQUESTS and attempts < max_attempts:
+        attempts += 1
         chosen_pet = random.choice(pets)
+        eligible_buyers = [buyer_id for buyer_id in buyer_ids if buyer_id != chosen_pet["seller_id"]]
+        if not eligible_buyers:
+            continue
+
+        buyer_id = random.choice(eligible_buyers)
+        pair_key = (chosen_pet["id"], buyer_id)
+        if pair_key in used_pet_buyer_pairs:
+            continue
+
+        if chosen_pet["id"] in approved_pet_ids:
+            request_status = random.choices(
+                ["pending", "rejected"],
+                weights=[80, 20],
+                k=1
+            )[0]
+        else:
+            request_status = random.choices(
+                REQUEST_STATUSES,
+                weights=[60, 25, 15],
+                k=1
+            )[0]
 
         request_date = datetime.now() - timedelta(
             days=random.randint(0, 60),
@@ -252,14 +283,24 @@ def create_purchase_requests():
         purchase_requests.append({
             "id": str(uuid.uuid4()),
             "pet_id": chosen_pet["id"],
-            "seller_id": chosen_pet["seller_id"],
-            "status": random.choices(
-                REQUEST_STATUSES,
-                weights=[60, 25, 15],
-                k=1
-            )[0],
+            "buyer_id": buyer_id,
+            "status": request_status,
             "request_date": request_date.strftime("%Y-%m-%d %H:%M:%S"),
         })
+        used_pet_buyer_pairs.add(pair_key)
+        if request_status == "approved":
+            approved_pet_ids.add(chosen_pet["id"])
+
+    if len(purchase_requests) < NUM_PURCHASE_REQUESTS:
+        raise ValueError(
+            f"Не удалось сгенерировать {NUM_PURCHASE_REQUESTS} уникальных заявок. "
+            f"Сгенерировано: {len(purchase_requests)}."
+        )
+
+    # Если по питомцу есть approved-заявка, объявление должно быть неактивным.
+    for pet in pets:
+        if pet["id"] in approved_pet_ids:
+            pet["is_active"] = False
 def save_all_to_csv():
     save_csv(
         OUTPUT_FILES["vet_passport"],
@@ -285,7 +326,7 @@ def save_all_to_csv():
 
     save_csv(
         OUTPUT_FILES["purchase_request"],
-        ["id", "pet_id", "seller_id", "status", "request_date"],
+        ["id", "pet_id", "buyer_id", "status", "request_date"],
         purchase_requests
     )
 
