@@ -58,11 +58,11 @@ func (pr *PurchaseRequestRouter) CreatePurchaseRequest(w http.ResponseWriter, r 
 		return
 	}
 	if payload.PetID == uuid.Nil {
-		writeErrorResponse(w, http.StatusBadRequest, errors.New("pet_id is required"), "Некорректный pet_id")
+		writeErrorResponse(w, http.StatusBadRequest, errors.New("pet_id is required"), "Поле pet_id обязательно")
 		return
 	}
 	if payload.BuyerID == uuid.Nil {
-		writeErrorResponse(w, http.StatusBadRequest, errors.New("buyer_id is required"), "Некорректный buyer_id")
+		writeErrorResponse(w, http.StatusBadRequest, errors.New("buyer_id is required"), "Поле buyer_id обязательно")
 		return
 	}
 
