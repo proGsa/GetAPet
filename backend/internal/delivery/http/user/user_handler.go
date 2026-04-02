@@ -47,6 +47,10 @@ func (ur *UserRouter) CreateUser(w http.ResponseWriter, r *http.Request) {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
 		return
 	}
+	if err := validateTelephoneNumber(createUser.TelephoneNumber); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат номера телефона")
+		return
+	}
 	userDomain := dto.CreateUserRequestFromDTO(createUser)
 
 	createdUser, err := ur.UserUsecase.Create(&userDomain)
@@ -217,6 +221,10 @@ func (ur *UserRouter) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var updateUser dto.UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&updateUser); err != nil {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
+		return
+	}
+	if err := validateTelephoneNumber(updateUser.TelephoneNumber); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат номера телефона")
 		return
 	}
 	domainUser := models.User{
