@@ -262,3 +262,26 @@ func (r *PetRepository) CheckBelonging(petID, sellerID uuid.UUID) (bool, error) 
 	
 	return exists, nil
 }
+
+func (r *PetRepository) Delete(id uuid.UUID) error {
+	query := `
+		DELETE FROM pet
+		WHERE id = $1
+	`
+
+	result, err := r.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrPetNotFound
+	}
+
+	return nil
+}

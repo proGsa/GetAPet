@@ -15,6 +15,8 @@ type User struct {
 	UserDescription string `json:"user_description" db:"user_description"`
 }
 
+
+
 type UserRepository interface {
 	Create(user *User) (*User, error)
 	GetAll() ([]User, error)
@@ -31,8 +33,11 @@ type UserService interface {
 	GetByLogin(login string) (*User, error)
 	Update(id uuid.UUID, user *User) (*User, error)
 	Delete(id uuid.UUID) error
+	Login(login string, password string) (*User, error)
 }
 
 var (
-	ErrUserNotFound = errors.New("user not found")
+	ErrUserNotFound         = errors.New("user not found")
+	ErrInvalidCredentials   = errors.New("invalid credentials")
 )
+
