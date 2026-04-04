@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -64,15 +63,11 @@ func JWTMiddleware(jwtSecret string) func(http.Handler) http.Handler {
 }
 
 func ExtractRawToken(authHeader string) (string, error) {
-	authHeader = strings.TrimSpace(authHeader)
 	if authHeader == "" {
 		return "", errors.New("authorization header is missing")
 	}
-	if len(authHeader) > 7 && strings.EqualFold(authHeader[:7], "Bearer ") {
-		authHeader = strings.TrimSpace(authHeader[7:])
-	}
-	if authHeader == "" {
-		return "", errors.New("authorization header is missing")
+	if len(authHeader) > 7 && (authHeader[:7] == "Bearer " || authHeader[:7] == "bearer ") {
+		return "", errors.New("ожидается только JWT токен без Bearer")
 	}
 	return authHeader, nil
 }
