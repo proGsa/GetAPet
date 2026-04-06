@@ -1095,6 +1095,247 @@
                 }
             }
         },
+        "/api/vet-passports": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vet-passports"
+                ],
+                "summary": "Получить список ветпаспортов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.VetPassportResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vet-passports"
+                ],
+                "summary": "Создать ветпаспорт",
+                "parameters": [
+                    {
+                        "description": "Данные ветпаспорта",
+                        "name": "passport",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateVetPassportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.VetPassportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/vet-passports/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vet-passports"
+                ],
+                "summary": "Получить ветпаспорт по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID ветпаспорта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.VetPassportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vet-passports"
+                ],
+                "summary": "Обновить ветпаспорт",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID ветпаспорта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Обновленные данные",
+                        "name": "passport",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateVetPassportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.VetPassportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "vet-passports"
+                ],
+                "summary": "Удалить ветпаспорт",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID ветпаспорта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "produces": [
@@ -1147,6 +1388,17 @@
             }
         },
         "delivery_http_user.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "delivery_http_vetpassport.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -1320,6 +1572,34 @@
                     "maxLength": 255,
                     "minLength": 6,
                     "example": "securepassword123"
+                }
+            }
+        },
+        "dto.CreateVetPassportRequest": {
+            "type": "object",
+            "properties": {
+                "chipping": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "health_issues": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Аллергия на корм"
+                },
+                "parasite_treatments": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Обработка от блох"
+                },
+                "sterilization": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "vaccinations": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Привит от бешенства"
                 }
             }
         },
@@ -1606,6 +1886,34 @@
                 }
             }
         },
+        "dto.UpdateVetPassportRequest": {
+            "type": "object",
+            "properties": {
+                "chipping": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "health_issues": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Нет"
+                },
+                "parasite_treatments": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Регулярная обработка"
+                },
+                "sterilization": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "vaccinations": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Все прививки сделаны"
+                }
+            }
+        },
         "dto.UserResponse": {
             "type": "object",
             "properties": {
@@ -1636,6 +1944,35 @@
                 "user_login": {
                     "type": "string",
                     "example": "ivan_ivanov"
+                }
+            }
+        },
+        "dto.VetPassportResponse": {
+            "type": "object",
+            "properties": {
+                "chipping": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "health_issues": {
+                    "type": "string",
+                    "example": "Нет"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "parasite_treatments": {
+                    "type": "string",
+                    "example": "Обработан"
+                },
+                "sterilization": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "vaccinations": {
+                    "type": "string",
+                    "example": "Привит"
                 }
             }
         }

@@ -25,6 +25,13 @@ definitions:
       message:
         type: string
     type: object
+  delivery_http_vetpassport.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
   dto.CreatePetRequest:
     properties:
       breed:
@@ -150,6 +157,27 @@ definitions:
     - telephone_number
     - user_login
     - user_password
+    type: object
+  dto.CreateVetPassportRequest:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Аллергия на корм
+        maxLength: 1000
+        type: string
+      parasite_treatments:
+        example: Обработка от блох
+        maxLength: 1000
+        type: string
+      sterilization:
+        example: false
+        type: boolean
+      vaccinations:
+        example: Привит от бешенства
+        maxLength: 1000
+        type: string
     type: object
   dto.GetPurchaseRequestResponse:
     properties:
@@ -361,6 +389,27 @@ definitions:
     - user_login
     - user_password
     type: object
+  dto.UpdateVetPassportRequest:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Нет
+        maxLength: 1000
+        type: string
+      parasite_treatments:
+        example: Регулярная обработка
+        maxLength: 1000
+        type: string
+      sterilization:
+        example: true
+        type: boolean
+      vaccinations:
+        example: Все прививки сделаны
+        maxLength: 1000
+        type: string
+    type: object
   dto.UserResponse:
     properties:
       city:
@@ -383,6 +432,27 @@ definitions:
         type: string
       user_login:
         example: ivan_ivanov
+        type: string
+    type: object
+  dto.VetPassportResponse:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Нет
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      parasite_treatments:
+        example: Обработан
+        type: string
+      sterilization:
+        example: false
+        type: boolean
+      vaccinations:
+        example: Привит
         type: string
     type: object
 info:
@@ -1085,6 +1155,164 @@ paths:
       summary: Login user
       tags:
       - users
+  /api/vet-passports:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.VetPassportResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Получить список ветпаспортов
+      tags:
+      - vet-passports
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные ветпаспорта
+        in: body
+        name: passport
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateVetPassportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.VetPassportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Создать ветпаспорт
+      tags:
+      - vet-passports
+  /api/vet-passports/{id}:
+    delete:
+      parameters:
+      - description: ID ветпаспорта
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Удалить ветпаспорт
+      tags:
+      - vet-passports
+    get:
+      parameters:
+      - description: ID ветпаспорта
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VetPassportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Получить ветпаспорт по ID
+      tags:
+      - vet-passports
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID ветпаспорта
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Обновленные данные
+        in: body
+        name: passport
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateVetPassportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VetPassportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Обновить ветпаспорт
+      tags:
+      - vet-passports
   /health:
     get:
       produces:
