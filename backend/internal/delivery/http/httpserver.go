@@ -3,9 +3,11 @@ package httpserver
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "getapet-backend/docs"
 	"getapet-backend/internal/delivery/http/pet"
@@ -36,12 +38,22 @@ func NewHTTPServer(addr string) *HTTPServer {
 }
 
 func (s *HTTPServer) Start(db *sql.DB) error {
-	s.server.Handler = setupRoutes(db)
+	router, err := setupRoutes(db)
+	if err != nil {
+		return err
+	}
+
+	s.server.Handler = router
 	log.Println("Server is running on", s.server.Addr)
 	return s.server.ListenAndServe()
 }
 
-func setupRoutes(db *sql.DB) *mux.Router {
+func setupRoutes(db *sql.DB) (*mux.Router, error) {
+	jwtSecret := strings.TrimSpace(os.Getenv("JWT_SECRET"))
+	if jwtSecret == "" {
+		return nil, fmt.Errorf("JWT_SECRET is required")
+	}
+
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo)
 
@@ -60,19 +72,19 @@ func setupRoutes(db *sql.DB) *mux.Router {
 
 	api := router.PathPrefix("/api").Subrouter()
 
-	userRouter := user.NewUserRouter(userUsecase, os.Getenv("JWT_SECRET"))
+	userRouter := user.NewUserRouter(userUsecase, jwtSecret)
 	userRouter.SetupRoutes(api)
 
-	petRouter := pet.NewPetRouter(petUsecase)
+	petRouter := pet.NewPetRouter(petUsecase, os.Getenv("JWT_SECRET"))
 	petRouter.SetupRoutes(api)
 
 	vetPassportRouter := vetpassport.NewVetPassportRouter(vetPassportUsecase)
 	vetPassportRouter.SetupRoutes(api)
 
-	purchaseRequestRouter := purchaserequest.NewPurchaseRequestRouter(purchaseRequestUsecase)
+	purchaseRequestRouter := purchaserequest.NewPurchaseRequestRouter(purchaseRequestUsecase, jwtSecret)
 	purchaseRequestRouter.SetupRoutes(api)
 
-	return router
+	return router, nil
 }
 
 // healthHandler godoc

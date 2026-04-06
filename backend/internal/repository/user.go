@@ -3,13 +3,32 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"strings"
 
 	"getapet-backend/internal/models"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type UserRepository struct {
 	db *sql.DB
+}
+
+func mapUserConstraintError(err error) error {
+	var pqErr *pq.Error
+	if !errors.As(err, &pqErr) {
+		return err
+	}
+
+	if pqErr.Code == "23505" {
+		constraint := strings.ToLower(pqErr.Constraint)
+		detail := strings.ToLower(pqErr.Detail)
+		if strings.Contains(constraint, "user_login") || strings.Contains(detail, "(user_login)") {
+			return models.ErrUserLoginAlreadyExists
+		}
+	}
+
+	return err
 }
 
 func NewUserRepository(db *sql.DB) *UserRepository {
@@ -43,7 +62,7 @@ func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 		&user.UserDescription,
 	)
 	if err != nil {
-		return nil, err
+		return nil, mapUserConstraintError(err)
 	}
 
 	return user, nil
@@ -109,7 +128,7 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*models.User, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrUserNotFound
 		}
-		return nil, err
+		return nil, mapUserConstraintError(err)
 	}
 
 	return &user, nil

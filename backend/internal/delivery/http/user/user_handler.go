@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,6 +11,19 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+func writeUserMappedError(w http.ResponseWriter, err error, defaultMessage string) {
+	switch {
+	case errors.Is(err, models.ErrUserNotFound):
+		writeErrorResponse(w, http.StatusNotFound, err, "Пользователь не найден")
+	case errors.Is(err, models.ErrUserLoginAlreadyExists):
+		writeErrorResponse(w, http.StatusConflict, err, "Пользователь с таким логином уже существует")
+	case errors.Is(err, models.ErrInvalidCredentials):
+		writeErrorResponse(w, http.StatusUnauthorized, err, "Неверный логин или пароль")
+	default:
+		writeErrorResponse(w, http.StatusInternalServerError, err, defaultMessage)
+	}
+}
 
 // CreateUser godoc
 // @Summary Create user
@@ -33,11 +47,31 @@ func (ur *UserRouter) CreateUser(w http.ResponseWriter, r *http.Request) {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
 		return
 	}
-	userDomain := dto.CreateUserRequestFromDTO(createUser)
+	if err := validateUserRequiredFields(createUser.FIO, createUser.TelephoneNumber); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, userValidationErrorMessage(err))
+		return
+	}
+	if err := validateTelephoneNumber(createUser.TelephoneNumber); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, userValidationErrorMessage(err))
+		return
+	}
+	if err := validateUserFieldsMaxLength(
+		createUser.FIO,
+		createUser.TelephoneNumber,
+		createUser.City,
+		createUser.UserLogin,
+		createUser.UserPassword,
+		createUser.Status,
+		createUser.UserDescription,
+	); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, userValidationErrorMessage(err))
+		return
+	}
 
+	userDomain := dto.CreateUserRequestFromDTO(createUser)
 	createdUser, err := ur.UserUsecase.Create(&userDomain)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось создать пользователя")
+		writeUserMappedError(w, err, "Не удалось создать пользователя")
 		return
 	}
 
@@ -63,7 +97,6 @@ func (ur *UserRouter) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var creds dto.LoginRequest
-
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
 		return
@@ -73,42 +106,21 @@ func (ur *UserRouter) Login(w http.ResponseWriter, r *http.Request) {
 		writeErrorResponse(w, http.StatusBadRequest, models.ErrInvalidCredentials, "Логин и пароль обязательны")
 		return
 	}
+
 	user, err := ur.UserUsecase.Login(creds.UserLogin, creds.UserPassword)
 	if err != nil {
-		if err == models.ErrInvalidCredentials {
-			writeErrorResponse(w, http.StatusUnauthorized, err, "Неверный логин или пароль")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось выполнить вход")
+		writeUserMappedError(w, err, "Не удалось выполнить вход в аккаунт")
 		return
 	}
 
 	token, err := ur.generateJWT(*user)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось сгенерировать токен")
+		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось сгенерировать токен для входа в аккаунт")
 		return
 	}
 
 	writeSuccessResponse(w, http.StatusOK, dto.LoginResponseFromDomain(*user, token))
 }
-
-// // Logout godoc
-// // @Summary Logout user
-// // @Tags users
-// // @Produce json
-// // @Security BearerAuth
-// // @Success 200 {object} dto.LogoutResponse
-// // @Failure 401 {object} ErrorResponse
-// // @Failure 503 {object} ErrorResponse
-// // @Router /api/users/logout [post]
-// func (ur *UserRouter) Logout(w http.ResponseWriter, _ *http.Request) {
-// 	if ur.UserUsecase == nil {
-// 		writeServiceUnavailable(w)
-// 		return
-// 	}
-// 
-// 	writeSuccessResponse(w, http.StatusOK, dto.LogoutResponse{Message: "Успешный выход из системы"})
-// }
 
 func (ur *UserRouter) generateJWT(user models.User) (string, error) {
 	claims := jwt.MapClaims{
@@ -138,7 +150,7 @@ func (ur *UserRouter) GetUsers(w http.ResponseWriter, _ *http.Request) {
 
 	users, err := ur.UserUsecase.GetAll()
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось получить пользователей")
+		writeUserMappedError(w, err, "Не удалось получить пользователей")
 		return
 	}
 
@@ -171,11 +183,7 @@ func (ur *UserRouter) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := ur.UserUsecase.GetByID(id)
 	if err != nil {
-		if err == models.ErrUserNotFound {
-			writeErrorResponse(w, http.StatusNotFound, err, "Пользователь не найден")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось получить пользователя")
+		writeUserMappedError(w, err, "Не удалось получить пользователя")
 		return
 	}
 
@@ -213,23 +221,41 @@ func (ur *UserRouter) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
 		return
 	}
+	if err := validateUserRequiredFields(updateUser.FIO, updateUser.TelephoneNumber); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, userValidationErrorMessage(err))
+		return
+	}
+	if err := validateTelephoneNumber(updateUser.TelephoneNumber); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, userValidationErrorMessage(err))
+		return
+	}
+	if err := validateUserFieldsMaxLength(
+		updateUser.FIO,
+		updateUser.TelephoneNumber,
+		updateUser.City,
+		updateUser.UserLogin,
+		updateUser.UserPassword,
+		updateUser.Status,
+		updateUser.UserDescription,
+	); err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, userValidationErrorMessage(err))
+		return
+	}
+
 	domainUser := models.User{
-	ID: id,
-	FIO:             updateUser.FIO,
-	TelephoneNumber: updateUser.TelephoneNumber,
-	City:            updateUser.City,
-	UserLogin:       updateUser.UserLogin,
-	UserPassword:    updateUser.UserPassword,
-	Status:          updateUser.Status,
-	UserDescription: updateUser.UserDescription,
-}
+		ID:              id,
+		FIO:             updateUser.FIO,
+		TelephoneNumber: updateUser.TelephoneNumber,
+		City:            updateUser.City,
+		UserLogin:       updateUser.UserLogin,
+		UserPassword:    updateUser.UserPassword,
+		Status:          updateUser.Status,
+		UserDescription: updateUser.UserDescription,
+	}
+
 	updatedUser, err := ur.UserUsecase.Update(id, &domainUser)
 	if err != nil {
-		if err == models.ErrUserNotFound {
-			writeErrorResponse(w, http.StatusNotFound, err, "Пользователь не найден")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось обновить пользователя")
+		writeUserMappedError(w, err, "Не удалось обновить данные пользователя")
 		return
 	}
 
@@ -261,11 +287,7 @@ func (ur *UserRouter) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	err = ur.UserUsecase.Delete(id)
 	if err != nil {
-		if err == models.ErrUserNotFound {
-			writeErrorResponse(w, http.StatusNotFound, err, "Пользователь не найден")
-			return
-		}
-		writeErrorResponse(w, http.StatusInternalServerError, err, "Не удалось удалить пользователя")
+		writeUserMappedError(w, err, "Не удалось удалить пользователя")
 		return
 	}
 
