@@ -4,12 +4,88 @@ definitions:
       status:
         type: string
     type: object
+  delivery_http_pet.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
   delivery_http_user.ErrorResponse:
     properties:
       error:
         type: string
       message:
         type: string
+    type: object
+  delivery_http_vetpassport.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.CreatePetRequest:
+    properties:
+      breed:
+        example: british
+        maxLength: 100
+        type: string
+      color:
+        example: black
+        maxLength: 50
+        type: string
+      good_with_animals:
+        example: false
+        type: boolean
+      good_with_children:
+        example: true
+        type: boolean
+      pedigree:
+        example: true
+        type: boolean
+      pet_age:
+        example: 2
+        maximum: 50
+        minimum: 0
+        type: integer
+      pet_description:
+        example: Очень дружелюбный и активный питомец
+        maxLength: 1000
+        type: string
+      pet_gender:
+        enum:
+        - male
+        - female
+        example: male
+        type: string
+      pet_name:
+        example: Барсик
+        maxLength: 100
+        minLength: 1
+        type: string
+      price:
+        example: 15000
+        minimum: 0
+        type: number
+      species:
+        enum:
+        - cat
+        - dog
+        - bird
+        - other
+        example: cat
+        type: string
+      vet_passport_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    required:
+    - color
+    - pet_age
+    - pet_gender
+    - pet_name
+    - price
+    - species
     type: object
   dto.CreateUserRequest:
     properties:
@@ -53,6 +129,27 @@ definitions:
     - user_login
     - user_password
     type: object
+  dto.CreateVetPassportRequest:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Аллергия на корм
+        maxLength: 1000
+        type: string
+      parasite_treatments:
+        example: Обработка от блох
+        maxLength: 1000
+        type: string
+      sterilization:
+        example: false
+        type: boolean
+      vaccinations:
+        example: Привит от бешенства
+        maxLength: 1000
+        type: string
+    type: object
   dto.LoginRequest:
     properties:
       user_login:
@@ -78,11 +175,112 @@ definitions:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
     type: object
+  dto.PetResponse:
+    properties:
+      breed:
+        example: british
+        type: string
+      color:
+        example: black
+        type: string
+      good_with_animals:
+        example: false
+        type: boolean
+      good_with_children:
+        example: true
+        type: boolean
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      pedigree:
+        example: true
+        type: boolean
+      pet_age:
+        example: 2
+        type: integer
+      pet_description:
+        example: Очень дружелюбный
+        type: string
+      pet_gender:
+        example: male
+        type: string
+      pet_name:
+        example: Барсик
+        type: string
+      price:
+        example: 15000
+        type: number
+      species:
+        example: cat
+        type: string
+      vet_passport_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
   dto.RegisterResponse:
     properties:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+    type: object
+  dto.UpdatePetRequest:
+    properties:
+      breed:
+        example: british
+        maxLength: 100
+        type: string
+      color:
+        example: black
+        maxLength: 50
+        type: string
+      good_with_animals:
+        example: false
+        type: boolean
+      good_with_children:
+        example: true
+        type: boolean
+      pedigree:
+        example: true
+        type: boolean
+      pet_age:
+        example: 3
+        maximum: 50
+        minimum: 0
+        type: integer
+      pet_description:
+        example: Спокойный и ласковый
+        maxLength: 1000
+        type: string
+      pet_gender:
+        enum:
+        - male
+        - female
+        example: male
+        type: string
+      pet_name:
+        example: Барсик
+        maxLength: 100
+        minLength: 1
+        type: string
+      price:
+        example: 18000
+        minimum: 0
+        type: number
+      species:
+        enum:
+        - cat
+        - dog
+        - bird
+        - other
+        example: cat
+        type: string
+    required:
+    - color
+    - pet_age
+    - pet_gender
+    - pet_name
+    - price
+    - species
     type: object
   dto.UpdateUserRequest:
     properties:
@@ -127,6 +325,27 @@ definitions:
     - user_login
     - user_password
     type: object
+  dto.UpdateVetPassportRequest:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Нет
+        maxLength: 1000
+        type: string
+      parasite_treatments:
+        example: Регулярная обработка
+        maxLength: 1000
+        type: string
+      sterilization:
+        example: true
+        type: boolean
+      vaccinations:
+        example: Все прививки сделаны
+        maxLength: 1000
+        type: string
+    type: object
   dto.UserResponse:
     properties:
       city:
@@ -148,12 +367,211 @@ definitions:
         example: ivan_ivanov
         type: string
     type: object
+  dto.VetPassportResponse:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Нет
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      parasite_treatments:
+        example: Обработан
+        type: string
+      sterilization:
+        example: false
+        type: boolean
+      vaccinations:
+        example: Привит
+        type: string
+    type: object
 info:
   contact: {}
   description: An aggregator of pet lists from shelters and private individuals.
   title: GetAPet Backend API
   version: "1.0"
 paths:
+  /api/pets:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PetResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+      summary: Получить список питомцев
+      tags:
+      - pets
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные питомца
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать питомца
+      tags:
+      - pets
+  /api/pets/{id}:
+    delete:
+      parameters:
+      - description: ID питомца
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Удалить питомца
+      tags:
+      - pets
+    get:
+      parameters:
+      - description: ID питомца
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+      summary: Получить питомца по ID
+      tags:
+      - pets
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID питомца
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Обновленные данные питомца
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_pet.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Обновить питомца
+      tags:
+      - pets
   /api/users:
     get:
       produces:
@@ -357,6 +775,164 @@ paths:
       summary: Login user
       tags:
       - users
+  /api/vet-passports:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.VetPassportResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Получить список ветпаспортов
+      tags:
+      - vet-passports
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные ветпаспорта
+        in: body
+        name: passport
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateVetPassportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.VetPassportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Создать ветпаспорт
+      tags:
+      - vet-passports
+  /api/vet-passports/{id}:
+    delete:
+      parameters:
+      - description: ID ветпаспорта
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Удалить ветпаспорт
+      tags:
+      - vet-passports
+    get:
+      parameters:
+      - description: ID ветпаспорта
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VetPassportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Получить ветпаспорт по ID
+      tags:
+      - vet-passports
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID ветпаспорта
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Обновленные данные
+        in: body
+        name: passport
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateVetPassportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VetPassportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/delivery_http_vetpassport.ErrorResponse'
+      summary: Обновить ветпаспорт
+      tags:
+      - vet-passports
   /health:
     get:
       produces:
@@ -371,7 +947,8 @@ paths:
       - system
 securityDefinitions:
   BearerAuth:
-    description: Enter only JWT token (without Bearer prefix)
+    description: 'JWT в заголовке Authorization: только токен, или префикс Bearer
+      и пробел перед токеном'
     in: header
     name: Authorization
     type: apiKey
