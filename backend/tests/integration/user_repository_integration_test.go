@@ -369,7 +369,7 @@ func initUserSchema(ctx context.Context, db *sql.DB) error {
 
 func clearUsersTable(t *testing.T, db *sql.DB) {
 	t.Helper()
-	if _, err := db.Exec(`TRUNCATE TABLE users`); err != nil {
+	if _, err := db.Exec(`TRUNCATE TABLE users CASCADE`); err != nil {
 		t.Fatalf("truncate users: %v", err)
 	}
 }
