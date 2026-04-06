@@ -75,7 +75,7 @@ func setupRoutes(db *sql.DB) (*mux.Router, error) {
 	userRouter := user.NewUserRouter(userUsecase, jwtSecret)
 	userRouter.SetupRoutes(api)
 
-	petRouter := pet.NewPetRouter(petUsecase)
+	petRouter := pet.NewPetRouter(petUsecase, os.Getenv("JWT_SECRET"))
 	petRouter.SetupRoutes(api)
 
 	vetPassportRouter := vetpassport.NewVetPassportRouter(vetPassportUsecase)
