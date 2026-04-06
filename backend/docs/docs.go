@@ -1406,6 +1406,17 @@ const docTemplate = `{
                 }
             }
         },
+        "delivery_http_vetpassport.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreatePetRequest": {
             "type": "object",
             "required": [
@@ -1569,6 +1580,34 @@ const docTemplate = `{
                     "maxLength": 255,
                     "minLength": 6,
                     "example": "securepassword123"
+                }
+            }
+        },
+        "dto.CreateVetPassportRequest": {
+            "type": "object",
+            "properties": {
+                "chipping": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "health_issues": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Аллергия на корм"
+                },
+                "parasite_treatments": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Обработка от блох"
+                },
+                "sterilization": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "vaccinations": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Привит от бешенства"
                 }
             }
         },
