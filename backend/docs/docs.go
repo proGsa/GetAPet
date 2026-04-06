@@ -292,6 +292,499 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/purchase-requests": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Get all purchase requests",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetPurchaseRequestResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Create purchase request",
+                "parameters": [
+                    {
+                        "description": "Purchase request payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePurchaseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePurchaseRequestResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/purchase-requests/buyer/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Get purchase requests by buyer ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Buyer ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetPurchaseRequestResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/purchase-requests/pet/{pet_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Get purchase requests by pet ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pet ID (UUID)",
+                        "name": "pet_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetPurchaseRequestResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/purchase-requests/seller/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Get purchase requests by seller ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Seller ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetPurchaseRequestResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/purchase-requests/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Get purchase request by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Purchase request ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetPurchaseRequestResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Delete purchase request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Purchase request ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/purchase-requests/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "purchase-requests"
+                ],
+                "summary": "Update purchase request status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Purchase request ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Status payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePurchaseRequestStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePurchaseRequestStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/delivery_http_purchaserequest.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "security": [
@@ -610,247 +1103,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/vet-passports": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vet-passports"
-                ],
-                "summary": "Получить список ветпаспортов",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.VetPassportResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vet-passports"
-                ],
-                "summary": "Создать ветпаспорт",
-                "parameters": [
-                    {
-                        "description": "Данные ветпаспорта",
-                        "name": "passport",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateVetPassportRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/dto.VetPassportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/vet-passports/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vet-passports"
-                ],
-                "summary": "Получить ветпаспорт по ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID ветпаспорта",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.VetPassportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vet-passports"
-                ],
-                "summary": "Обновить ветпаспорт",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID ветпаспорта",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Обновленные данные",
-                        "name": "passport",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateVetPassportRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.VetPassportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "vet-passports"
-                ],
-                "summary": "Удалить ветпаспорт",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID ветпаспорта",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/delivery_http_vetpassport.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/health": {
             "get": {
                 "produces": [
@@ -891,7 +1143,7 @@ const docTemplate = `{
                 }
             }
         },
-        "delivery_http_user.ErrorResponse": {
+        "delivery_http_purchaserequest.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -902,7 +1154,7 @@ const docTemplate = `{
                 }
             }
         },
-        "delivery_http_vetpassport.ErrorResponse": {
+        "delivery_http_user.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -992,6 +1244,40 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreatePurchaseRequest": {
+            "type": "object",
+            "properties": {
+                "buyer_id": {
+                    "type": "string"
+                },
+                "pet_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreatePurchaseRequestResponse": {
+            "type": "object",
+            "properties": {
+                "buyer_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "pet_id": {
+                    "type": "string"
+                },
+                "request_date": {
+                    "type": "string"
+                },
+                "seller_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateUserRequest": {
             "type": "object",
             "required": [
@@ -1045,31 +1331,26 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateVetPassportRequest": {
+        "dto.GetPurchaseRequestResponse": {
             "type": "object",
             "properties": {
-                "chipping": {
-                    "type": "boolean",
-                    "example": true
+                "buyer_id": {
+                    "type": "string"
                 },
-                "health_issues": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Аллергия на корм"
+                "id": {
+                    "type": "string"
                 },
-                "parasite_treatments": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Обработка от блох"
+                "pet_id": {
+                    "type": "string"
                 },
-                "sterilization": {
-                    "type": "boolean",
-                    "example": false
+                "request_date": {
+                    "type": "string"
                 },
-                "vaccinations": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Привит от бешенства"
+                "seller_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -1248,6 +1529,37 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdatePurchaseRequestStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdatePurchaseRequestStatusResponse": {
+            "type": "object",
+            "properties": {
+                "buyer_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "pet_id": {
+                    "type": "string"
+                },
+                "request_date": {
+                    "type": "string"
+                },
+                "seller_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateUserRequest": {
             "type": "object",
             "required": [
@@ -1302,34 +1614,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateVetPassportRequest": {
-            "type": "object",
-            "properties": {
-                "chipping": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "health_issues": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Нет"
-                },
-                "parasite_treatments": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Регулярная обработка"
-                },
-                "sterilization": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "vaccinations": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Все прививки сделаны"
-                }
-            }
-        },
         "dto.UserResponse": {
             "type": "object",
             "properties": {
@@ -1362,40 +1646,11 @@ const docTemplate = `{
                     "example": "ivan_ivanov"
                 }
             }
-        },
-        "dto.VetPassportResponse": {
-            "type": "object",
-            "properties": {
-                "chipping": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "health_issues": {
-                    "type": "string",
-                    "example": "Нет"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "550e8400-e29b-41d4-a716-446655440000"
-                },
-                "parasite_treatments": {
-                    "type": "string",
-                    "example": "Обработан"
-                },
-                "sterilization": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "vaccinations": {
-                    "type": "string",
-                    "example": "Привит"
-                }
-            }
         }
     },
     "securityDefinitions": {
         "BearerAuth": {
-            "description": "JWT в заголовке Authorization: только токен, или префикс Bearer и пробел перед токеном",
+            "description": "Enter only JWT token (without Bearer prefix)",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
