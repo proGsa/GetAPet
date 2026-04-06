@@ -33,6 +33,7 @@ type RegisterResponse struct {
 }
 
 type UserResponse struct {
+	ID      string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	FIO             string `json:"fio" example:"Иванов Иван Иванович"`
 	TelephoneNumber string `json:"telephone_number" example:"+79991234567"`
 	City            string `json:"city" example:"Moscow"`
@@ -102,6 +103,7 @@ func LoginResponseFromDomain(u models.User, token string) LoginResponse {
 
 func UserToDto(domainUser models.User) UserResponse {
 	return UserResponse{
+		ID:             domainUser.ID.String(),
 		FIO:             domainUser.FIO,
 		TelephoneNumber: domainUser.TelephoneNumber,
 		City:            domainUser.City,
