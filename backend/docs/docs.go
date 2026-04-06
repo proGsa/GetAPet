@@ -120,7 +120,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/purchase-requests/buyer": {
+        "/api/purchase-requests/buyer/{id}": {
             "get": {
                 "security": [
                     {
@@ -134,6 +134,15 @@ const docTemplate = `{
                     "purchase-requests"
                 ],
                 "summary": "Get purchase requests by buyer ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Buyer ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -231,7 +240,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/purchase-requests/seller": {
+        "/api/purchase-requests/seller/{id}": {
             "get": {
                 "security": [
                     {
@@ -245,6 +254,15 @@ const docTemplate = `{
                     "purchase-requests"
                 ],
                 "summary": "Get purchase requests by seller ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Seller ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -885,6 +903,9 @@ const docTemplate = `{
                 "request_date": {
                     "type": "string"
                 },
+                "seller_id": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -958,6 +979,9 @@ const docTemplate = `{
                 "request_date": {
                     "type": "string"
                 },
+                "seller_id": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -1027,6 +1051,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "request_date": {
+                    "type": "string"
+                },
+                "seller_id": {
                     "type": "string"
                 },
                 "status": {
@@ -1110,6 +1137,10 @@ const docTemplate = `{
                 "user_description": {
                     "type": "string",
                     "example": "Люблю животных"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "user_login": {
                     "type": "string",

@@ -16,6 +16,7 @@ type CreatePurchaseRequestResponse struct {
 	ID          uuid.UUID `json:"id"`
 	PetID       uuid.UUID `json:"pet_id"`
 	BuyerID     uuid.UUID `json:"buyer_id"`
+	SellerID    uuid.UUID `json:"seller_id"`
 	Status      string    `json:"status"`
 	RequestDate time.Time `json:"request_date"`
 }
@@ -24,6 +25,7 @@ type GetPurchaseRequestResponse struct {
 	ID          uuid.UUID `json:"id"`
 	PetID       uuid.UUID `json:"pet_id"`
 	BuyerID     uuid.UUID `json:"buyer_id"`
+	SellerID    uuid.UUID `json:"seller_id"`
 	Status      string    `json:"status"`
 	RequestDate time.Time `json:"request_date"`
 }
@@ -36,6 +38,7 @@ type UpdatePurchaseRequestStatusResponse struct {
 	ID          uuid.UUID `json:"id"`
 	PetID       uuid.UUID `json:"pet_id"`
 	BuyerID     uuid.UUID `json:"buyer_id"`
+	SellerID    uuid.UUID `json:"seller_id"`
 	Status      string    `json:"status"`
 	RequestDate time.Time `json:"request_date"`
 }
@@ -56,6 +59,7 @@ func PurchaseRequestToCreateDto(req models.PurchaseRequest) CreatePurchaseReques
 		ID:          req.ID,
 		PetID:       req.PetID,
 		BuyerID:     req.BuyerID,
+		SellerID:    req.SellerID,
 		Status:      req.Status,
 		RequestDate: req.RequestDate,
 	}
@@ -66,6 +70,7 @@ func PurchaseRequestToGetDto(req models.PurchaseRequest) GetPurchaseRequestRespo
 		ID:          req.ID,
 		PetID:       req.PetID,
 		BuyerID:     req.BuyerID,
+		SellerID:    req.SellerID,
 		Status:      req.Status,
 		RequestDate: req.RequestDate,
 	}
@@ -78,6 +83,7 @@ func PurchaseRequestsToGetDtos(requests []models.PurchaseRequest) []GetPurchaseR
 			ID:          request.ID,
 			PetID:       request.PetID,
 			BuyerID:     request.BuyerID,
+			SellerID:    request.SellerID,
 			Status:      request.Status,
 			RequestDate: request.RequestDate,
 		})
@@ -90,6 +96,7 @@ func PurchaseRequestToUpdateStatusDto(req models.PurchaseRequest) UpdatePurchase
 		ID:          req.ID,
 		PetID:       req.PetID,
 		BuyerID:     req.BuyerID,
+		SellerID:    req.SellerID,
 		Status:      req.Status,
 		RequestDate: req.RequestDate,
 	}

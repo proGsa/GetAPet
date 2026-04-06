@@ -75,13 +75,16 @@ func (r *PurchaseRequestRepository) Create(request *models.PurchaseRequest) (*mo
 	const query = `
 		INSERT INTO purchase_request (pet_id, buyer_id, status)
 		VALUES ($1, $2, $3)
-		RETURNING id, pet_id, buyer_id, status, request_date
+		RETURNING id, pet_id, buyer_id,
+		          (SELECT seller_id FROM pet WHERE id = purchase_request.pet_id),
+		          status, request_date
 	`
 
 	err = tx.QueryRow(query, request.PetID, request.BuyerID, request.Status).Scan(
 		&request.ID,
 		&request.PetID,
 		&request.BuyerID,
+		&request.SellerID,
 		&request.Status,
 		&request.RequestDate,
 	)
@@ -98,8 +101,9 @@ func (r *PurchaseRequestRepository) Create(request *models.PurchaseRequest) (*mo
 
 func (r *PurchaseRequestRepository) GetAll() ([]models.PurchaseRequest, error) {
 	const query = `
-		SELECT id, pet_id, buyer_id, status, request_date
-		FROM purchase_request
+		SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date
+		FROM purchase_request pr
+		JOIN pet p ON p.id = pr.pet_id
 		ORDER BY request_date DESC
 	`
 
@@ -116,6 +120,7 @@ func (r *PurchaseRequestRepository) GetAll() ([]models.PurchaseRequest, error) {
 			&req.ID,
 			&req.PetID,
 			&req.BuyerID,
+			&req.SellerID,
 			&req.Status,
 			&req.RequestDate,
 		); err != nil {
@@ -133,9 +138,10 @@ func (r *PurchaseRequestRepository) GetAll() ([]models.PurchaseRequest, error) {
 
 func (r *PurchaseRequestRepository) GetByID(id uuid.UUID) (*models.PurchaseRequest, error) {
 	const query = `
-		SELECT id, pet_id, buyer_id, status, request_date
-		FROM purchase_request
-		WHERE id = $1
+		SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date
+		FROM purchase_request pr
+		JOIN pet p ON p.id = pr.pet_id
+		WHERE pr.id = $1
 	`
 
 	var req models.PurchaseRequest
@@ -143,6 +149,7 @@ func (r *PurchaseRequestRepository) GetByID(id uuid.UUID) (*models.PurchaseReque
 		&req.ID,
 		&req.PetID,
 		&req.BuyerID,
+		&req.SellerID,
 		&req.Status,
 		&req.RequestDate,
 	)
@@ -158,10 +165,11 @@ func (r *PurchaseRequestRepository) GetByID(id uuid.UUID) (*models.PurchaseReque
 
 func (r *PurchaseRequestRepository) GetByBuyerID(buyerID uuid.UUID) ([]models.PurchaseRequest, error) {
 	const query = `
-		SELECT id, pet_id, buyer_id, status, request_date
-		FROM purchase_request
-		WHERE buyer_id = $1
-		ORDER BY request_date DESC
+		SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date
+		FROM purchase_request pr
+		JOIN pet p ON p.id = pr.pet_id
+		WHERE pr.buyer_id = $1
+		ORDER BY pr.request_date DESC
 	`
 
 	rows, err := r.db.Query(query, buyerID)
@@ -177,6 +185,7 @@ func (r *PurchaseRequestRepository) GetByBuyerID(buyerID uuid.UUID) ([]models.Pu
 			&req.ID,
 			&req.PetID,
 			&req.BuyerID,
+			&req.SellerID,
 			&req.Status,
 			&req.RequestDate,
 		); err != nil {
@@ -194,7 +203,7 @@ func (r *PurchaseRequestRepository) GetByBuyerID(buyerID uuid.UUID) ([]models.Pu
 
 func (r *PurchaseRequestRepository) GetBySellerID(sellerID uuid.UUID) ([]models.PurchaseRequest, error) {
 	const query = `
-		SELECT pr.id, pr.pet_id, pr.buyer_id, pr.status, pr.request_date
+		SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date
 		FROM purchase_request pr
 		JOIN pet p ON p.id = pr.pet_id
 		WHERE p.seller_id = $1
@@ -214,6 +223,7 @@ func (r *PurchaseRequestRepository) GetBySellerID(sellerID uuid.UUID) ([]models.
 			&req.ID,
 			&req.PetID,
 			&req.BuyerID,
+			&req.SellerID,
 			&req.Status,
 			&req.RequestDate,
 		); err != nil {
@@ -231,10 +241,11 @@ func (r *PurchaseRequestRepository) GetBySellerID(sellerID uuid.UUID) ([]models.
 
 func (r *PurchaseRequestRepository) GetByPetID(petID uuid.UUID) ([]models.PurchaseRequest, error) {
 	const query = `
-		SELECT id, pet_id, buyer_id, status, request_date
-		FROM purchase_request
-		WHERE pet_id = $1
-		ORDER BY request_date DESC
+		SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date
+		FROM purchase_request pr
+		JOIN pet p ON p.id = pr.pet_id
+		WHERE pr.pet_id = $1
+		ORDER BY pr.request_date DESC
 	`
 
 	rows, err := r.db.Query(query, petID)
@@ -250,6 +261,7 @@ func (r *PurchaseRequestRepository) GetByPetID(petID uuid.UUID) ([]models.Purcha
 			&req.ID,
 			&req.PetID,
 			&req.BuyerID,
+			&req.SellerID,
 			&req.Status,
 			&req.RequestDate,
 		); err != nil {
@@ -274,6 +286,75 @@ func (r *PurchaseRequestRepository) requestExistsTx(tx *sql.Tx, id uuid.UUID) (b
 	return exists, nil
 }
 
+func (r *PurchaseRequestRepository) applyStatusChangeTx(
+	tx *sql.Tx,
+	id uuid.UUID,
+	normalizedStatus string,
+	previousStatus string,
+	req *models.PurchaseRequest,
+) error {
+	err := tx.QueryRow(
+		`UPDATE purchase_request
+		 SET status = $1
+		 WHERE id = $2
+		 RETURNING id, pet_id, buyer_id,
+		           (SELECT seller_id FROM pet WHERE id = purchase_request.pet_id),
+		           status, request_date`,
+		normalizedStatus,
+		id,
+	).Scan(
+		&req.ID,
+		&req.PetID,
+		&req.BuyerID,
+		&req.SellerID,
+		&req.Status,
+		&req.RequestDate,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.ErrPurchaseRequestNotFound
+		}
+		return mapPurchaseRequestConstraintError(err)
+	}
+
+	switch normalizedStatus {
+	case "approved":
+		_, err = tx.Exec(
+			`UPDATE purchase_request
+			 SET status = 'rejected'
+			 WHERE pet_id = $1 AND id <> $2 AND status = 'pending'`,
+			req.PetID,
+			req.ID,
+		)
+		if err != nil {
+			return err
+		}
+
+		if _, err = tx.Exec(`UPDATE pet SET is_active = false WHERE id = $1`, req.PetID); err != nil {
+			return err
+		}
+	default:
+		if previousStatus != "approved" {
+			return nil
+		}
+
+		var hasApproved bool
+		err = tx.QueryRow(
+			`SELECT EXISTS (SELECT 1 FROM purchase_request WHERE pet_id = $1 AND status = 'approved')`,
+			req.PetID,
+		).Scan(&hasApproved)
+		if err != nil {
+			return err
+		}
+
+		if _, err = tx.Exec(`UPDATE pet SET is_active = $1 WHERE id = $2`, !hasApproved, req.PetID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*models.PurchaseRequest, error) {
 	normalizedStatus := strings.ToLower(strings.TrimSpace(status))
 	if normalizedStatus == "" {
@@ -291,12 +372,17 @@ func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*
 
 	var req models.PurchaseRequest
 	err = tx.QueryRow(
-		`SELECT id, pet_id, buyer_id, status, request_date FROM purchase_request WHERE id = $1 FOR UPDATE`,
+		`SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date
+		 FROM purchase_request pr
+		 JOIN pet p ON p.id = pr.pet_id
+		 WHERE pr.id = $1
+		 FOR UPDATE OF pr, p`,
 		id,
 	).Scan(
 		&req.ID,
 		&req.PetID,
 		&req.BuyerID,
+		&req.SellerID,
 		&req.Status,
 		&req.RequestDate,
 	)
@@ -323,67 +409,8 @@ func (r *PurchaseRequestRepository) UpdateStatus(id uuid.UUID, status string) (*
 		}
 	}
 
-	// обновление статуса требуемой заявки
-	err = tx.QueryRow(
-		`UPDATE purchase_request
-		 SET status = $1
-		 WHERE id = $2
-		 RETURNING id, pet_id, buyer_id, status, request_date`,
-		normalizedStatus,
-		id,
-	).Scan(
-		&req.ID,
-		&req.PetID,
-		&req.BuyerID,
-		&req.Status,
-		&req.RequestDate,
-	)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, models.ErrPurchaseRequestNotFound
-		}
-		return nil, mapPurchaseRequestConstraintError(err)
-	}
-
-	switch normalizedStatus {
-	/* если заявка одобрена, то оставшиеся заявки со статусом pending надо перевести в статус rejected
-	и для сделать объявление питомца неактивным*/
-	case "approved":
-		_, err = tx.Exec(
-			`UPDATE purchase_request
-			 SET status = 'rejected'
-			 WHERE pet_id = $1 AND id <> $2 AND status = 'pending'`,
-			req.PetID,
-			req.ID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		if _, err = tx.Exec(`UPDATE pet SET is_active = false WHERE id = $1`, req.PetID); err != nil {
-			return nil, err
-		}
-	default:
-		/* если заявка НЕ одобрена, а меняется на pending/regected */
-		if previousStatus != "approved" {
-			//было заявка одобрена, так что ничего в таблице pet менять не надо, то есть peisactive уже и так равен false
-			break
-		}
-		/* заявка была до этого одобрена, но стала rejected/penging => надо проверить есть ли
-		approved заявки: если есть, то оставить is_active у питомца равным false, иначе - равным true*/
-		var hasApproved bool
-		//проверка на наличие активных других заявок
-		err = tx.QueryRow(
-			`SELECT EXISTS (SELECT 1 FROM purchase_request WHERE pet_id = $1 AND status = 'approved')`,
-			req.PetID,
-		).Scan(&hasApproved)
-		if err != nil {
-			return nil, err
-		}
-		//делаем активные объявления неактивными
-		if _, err = tx.Exec(`UPDATE pet SET is_active = $1 WHERE id = $2`, !hasApproved, req.PetID); err != nil {
-			return nil, err
-		}
+	if err = r.applyStatusChangeTx(tx, id, normalizedStatus, previousStatus, &req); err != nil {
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -411,7 +438,7 @@ func (r *PurchaseRequestRepository) UpdateStatusBySeller(id uuid.UUID, sellerID 
 	var req models.PurchaseRequest
 	var isActive bool
 	err = tx.QueryRow(
-		`SELECT pr.id, pr.pet_id, pr.buyer_id, pr.status, pr.request_date, p.is_active
+		`SELECT pr.id, pr.pet_id, pr.buyer_id, p.seller_id, pr.status, pr.request_date, p.is_active
 		 FROM purchase_request pr
 		 JOIN pet p ON p.id = pr.pet_id
 		 WHERE pr.id = $1 AND p.seller_id = $2
@@ -422,6 +449,7 @@ func (r *PurchaseRequestRepository) UpdateStatusBySeller(id uuid.UUID, sellerID 
 		&req.ID,
 		&req.PetID,
 		&req.BuyerID,
+		&req.SellerID,
 		&req.Status,
 		&req.RequestDate,
 		&isActive,
@@ -445,59 +473,8 @@ func (r *PurchaseRequestRepository) UpdateStatusBySeller(id uuid.UUID, sellerID 
 		return nil, models.ErrPurchaseRequestPetNotAvailable
 	}
 
-	err = tx.QueryRow(
-		`UPDATE purchase_request
-		 SET status = $1
-		 WHERE id = $2
-		 RETURNING id, pet_id, buyer_id, status, request_date`,
-		normalizedStatus,
-		id,
-	).Scan(
-		&req.ID,
-		&req.PetID,
-		&req.BuyerID,
-		&req.Status,
-		&req.RequestDate,
-	)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, models.ErrPurchaseRequestNotFound
-		}
-		return nil, mapPurchaseRequestConstraintError(err)
-	}
-
-	switch normalizedStatus {
-	case "approved":
-		_, err = tx.Exec(
-			`UPDATE purchase_request
-			 SET status = 'rejected'
-			 WHERE pet_id = $1 AND id <> $2 AND status = 'pending'`,
-			req.PetID,
-			req.ID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		if _, err = tx.Exec(`UPDATE pet SET is_active = false WHERE id = $1`, req.PetID); err != nil {
-			return nil, err
-		}
-	default:
-		if previousStatus != "approved" {
-			break
-		}
-		var hasApproved bool
-		err = tx.QueryRow(
-			`SELECT EXISTS (SELECT 1 FROM purchase_request WHERE pet_id = $1 AND status = 'approved')`,
-			req.PetID,
-		).Scan(&hasApproved)
-		if err != nil {
-			return nil, err
-		}
-
-		if _, err = tx.Exec(`UPDATE pet SET is_active = $1 WHERE id = $2`, !hasApproved, req.PetID); err != nil {
-			return nil, err
-		}
+	if err = r.applyStatusChangeTx(tx, id, normalizedStatus, previousStatus, &req); err != nil {
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {

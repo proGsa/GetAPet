@@ -112,7 +112,7 @@
                 }
             }
         },
-        "/api/purchase-requests/buyer": {
+        "/api/purchase-requests/buyer/{id}": {
             "get": {
                 "security": [
                     {
@@ -126,6 +126,15 @@
                     "purchase-requests"
                 ],
                 "summary": "Get purchase requests by buyer ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Buyer ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -223,7 +232,7 @@
                 }
             }
         },
-        "/api/purchase-requests/seller": {
+        "/api/purchase-requests/seller/{id}": {
             "get": {
                 "security": [
                     {
@@ -237,6 +246,15 @@
                     "purchase-requests"
                 ],
                 "summary": "Get purchase requests by seller ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Seller ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -877,6 +895,9 @@
                 "request_date": {
                     "type": "string"
                 },
+                "seller_id": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -950,6 +971,9 @@
                 "request_date": {
                     "type": "string"
                 },
+                "seller_id": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -1019,6 +1043,9 @@
                     "type": "string"
                 },
                 "request_date": {
+                    "type": "string"
+                },
+                "seller_id": {
                     "type": "string"
                 },
                 "status": {
@@ -1102,6 +1129,10 @@
                 "user_description": {
                     "type": "string",
                     "example": "Люблю животных"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "user_login": {
                     "type": "string",

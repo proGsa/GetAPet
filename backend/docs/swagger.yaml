@@ -35,6 +35,8 @@ definitions:
         type: string
       request_date:
         type: string
+      seller_id:
+        type: string
       status:
         type: string
     type: object
@@ -90,6 +92,8 @@ definitions:
         type: string
       request_date:
         type: string
+      seller_id:
+        type: string
       status:
         type: string
     type: object
@@ -138,6 +142,8 @@ definitions:
       pet_id:
         type: string
       request_date:
+        type: string
+      seller_id:
         type: string
       status:
         type: string
@@ -201,6 +207,9 @@ definitions:
         type: string
       user_description:
         example: Люблю животных
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
         type: string
       user_login:
         example: ivan_ivanov
@@ -411,8 +420,14 @@ paths:
       summary: Update purchase request status
       tags:
       - purchase-requests
-  /api/purchase-requests/buyer:
+  /api/purchase-requests/buyer/{id}:
     get:
+      parameters:
+      - description: Buyer ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -481,8 +496,14 @@ paths:
       summary: Get purchase requests by pet ID
       tags:
       - purchase-requests
-  /api/purchase-requests/seller:
+  /api/purchase-requests/seller/{id}:
     get:
+      parameters:
+      - description: Seller ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
