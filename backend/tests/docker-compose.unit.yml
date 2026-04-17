@@ -1,0 +1,7 @@
+services:
+  unit-tests:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    container_name: getapet-unit-tests
+    command: ["tests/run-unit-tests.sh"]
