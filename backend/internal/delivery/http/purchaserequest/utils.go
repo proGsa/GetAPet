@@ -34,6 +34,7 @@ func parseIDFromPath(r *http.Request) (uuid.UUID, error) {
 func parseIDFromPathParam(r *http.Request, name string) (uuid.UUID, error) {
 	return uuid.Parse(mux.Vars(r)[name])
 }
+
 // не используется - удалить ?
 // func userIDFromContext(r *http.Request) (uuid.UUID, error) {
 // 	userID, ok := r.Context().Value(middleware.UserIDKey).(string)

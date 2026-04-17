@@ -10,17 +10,15 @@ import (
 	"github.com/google/uuid"
 )
 
-//
 // MOCK REPOSITORY
-//
 type mockPetRepo struct {
-	createFn          func(*models.Pet) (*models.Pet, error)
-	getAllFn          func() ([]models.Pet, error)
-	getByIDFn         func(uuid.UUID) (*models.Pet, error)
-	getBySellerIDFn   func(uuid.UUID) ([]models.Pet, error)
-	updateFn          func(uuid.UUID, *models.Pet) (*models.Pet, error)
-	deleteFn          func(uuid.UUID) error
-	checkBelongingFn  func(uuid.UUID, uuid.UUID) (bool, error)
+	createFn         func(*models.Pet) (*models.Pet, error)
+	getAllFn         func() ([]models.Pet, error)
+	getByIDFn        func(uuid.UUID) (*models.Pet, error)
+	getBySellerIDFn  func(uuid.UUID) ([]models.Pet, error)
+	updateFn         func(uuid.UUID, *models.Pet) (*models.Pet, error)
+	deleteFn         func(uuid.UUID) error
+	checkBelongingFn func(uuid.UUID, uuid.UUID) (bool, error)
 }
 
 func (m *mockPetRepo) Create(p *models.Pet) (*models.Pet, error) {

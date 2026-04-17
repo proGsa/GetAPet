@@ -60,14 +60,14 @@ func TestVetPassportRepositoryIntegration(t *testing.T) {
 
 		for _, p := range []models.VetPassport{
 			{
-				Chipping:      true,
-				HealthIssues:  "a",
-				Vaccinations:  "v1",
+				Chipping:     true,
+				HealthIssues: "a",
+				Vaccinations: "v1",
 			},
 			{
-				Chipping:      false,
-				HealthIssues:  "b",
-				Vaccinations:  "v2",
+				Chipping:     false,
+				HealthIssues: "b",
+				Vaccinations: "v2",
 			},
 		} {
 			if _, err := repo.Create(&p); err != nil {

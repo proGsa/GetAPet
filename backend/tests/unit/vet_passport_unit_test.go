@@ -14,11 +14,11 @@ import (
 //
 
 type mockVetPassportRepo struct {
-	createFn func(*models.VetPassport) (*models.VetPassport, error)
-	getAllFn func() ([]models.VetPassport, error)
+	createFn  func(*models.VetPassport) (*models.VetPassport, error)
+	getAllFn  func() ([]models.VetPassport, error)
 	getByIDFn func(uuid.UUID) (*models.VetPassport, error)
-	updateFn func(uuid.UUID, *models.VetPassport) (*models.VetPassport, error)
-	deleteFn func(uuid.UUID) error
+	updateFn  func(uuid.UUID, *models.VetPassport) (*models.VetPassport, error)
+	deleteFn  func(uuid.UUID) error
 }
 
 func (m *mockVetPassportRepo) Create(p *models.VetPassport) (*models.VetPassport, error) {

@@ -10,8 +10,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token       string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTYtNDQ2NjU1NDQwMDAwIiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjE3MDAwMDAwMDB9"`
-	ID      string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Token string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTYtNDQ2NjU1NDQwMDAwIiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjE3MDAwMDAwMDB9"`
+	ID    string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
 }
 
 type LogoutResponse struct {
@@ -33,7 +33,7 @@ type RegisterResponse struct {
 }
 
 type UserResponse struct {
-	ID      string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	ID              string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	FIO             string `json:"fio" example:"Иванов Иван Иванович"`
 	TelephoneNumber string `json:"telephone_number" example:"+79991234567"`
 	City            string `json:"city" example:"Moscow"`
@@ -87,7 +87,6 @@ func UpdateUserRequestFromDTO(req UpdateUserRequest) models.User {
 	}
 }
 
-
 func RegisterResponseFromDomain(u models.User) RegisterResponse {
 	return RegisterResponse{
 		ID: u.ID.String(),
@@ -96,14 +95,14 @@ func RegisterResponseFromDomain(u models.User) RegisterResponse {
 
 func LoginResponseFromDomain(u models.User, token string) LoginResponse {
 	return LoginResponse{
-		ID: u.ID.String(),
+		ID:    u.ID.String(),
 		Token: token,
 	}
 }
 
 func UserToDto(domainUser models.User) UserResponse {
 	return UserResponse{
-		ID:             domainUser.ID.String(),
+		ID:              domainUser.ID.String(),
 		FIO:             domainUser.FIO,
 		TelephoneNumber: domainUser.TelephoneNumber,
 		City:            domainUser.City,
@@ -112,7 +111,6 @@ func UserToDto(domainUser models.User) UserResponse {
 		UserDescription: domainUser.UserDescription,
 	}
 }
-
 
 func UsersToDto(domainUsers []models.User) []UserResponse {
 	dtos := make([]UserResponse, len(domainUsers))

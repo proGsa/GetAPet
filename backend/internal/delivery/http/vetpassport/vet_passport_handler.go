@@ -6,7 +6,6 @@ import (
 
 	"getapet-backend/internal/dto"
 	"getapet-backend/internal/models"
-
 	// "github.com/google/uuid"
 )
 
