@@ -53,7 +53,9 @@ func (r *VetPassportRepository) GetAll() ([]models.VetPassport, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var passports []models.VetPassport
 
