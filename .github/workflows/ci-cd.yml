@@ -54,6 +54,7 @@ jobs:
       - name: Run unit tests (docker compose)
         run: |
           docker compose -f /backend/tests/docker-compose.unit.yml up --build --abort-on-container-exit --exit-code-from unit-tests
+  
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
@@ -99,7 +100,7 @@ jobs:
 
       - name: Build
         working-directory: backend
-        run: go build ./cmd
+        run: go build -o ./bin/app ./cmd
 
   docs:
     name: Generate Swagger Docs
