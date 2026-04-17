@@ -63,7 +63,9 @@ func (r *PetRepository) GetAll() ([]models.Pet, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var pets []models.Pet
 
@@ -117,7 +119,9 @@ func (r *PetRepository) GetBySellerID(sellerID uuid.UUID) ([]models.Pet, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var pets []models.Pet
 
