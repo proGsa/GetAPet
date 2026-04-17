@@ -1,9 +1,11 @@
 package models
 
-import "errors"
+import ("errors"
+"github.com/google/uuid"
+)
 
 type VetPassport struct {
-	ID                 int    `json:"id" db:"id"`
+	ID                 uuid.UUID    `json:"id" db:"id"`
 	Chipping           bool   `json:"chipping" db:"chipping"`
 	Sterilization      bool   `json:"sterilization" db:"sterilization"`
 	HealthIssues       string `json:"health_issues" db:"health_issues"`
@@ -14,17 +16,17 @@ type VetPassport struct {
 type VetPassportRepository interface {
 	Create(passport *VetPassport) (*VetPassport, error)
 	GetAll() ([]VetPassport, error)
-	GetByID(id int) (*VetPassport, error)
-	Update(id int, passport *VetPassport) (*VetPassport, error)
-	Delete(id int) error
+	GetByID(id uuid.UUID) (*VetPassport, error)
+	Update(id uuid.UUID, passport *VetPassport) (*VetPassport, error)
+	Delete(id uuid.UUID) error
 }
 
 type VetPassportService interface {
 	Create(passport *VetPassport) (*VetPassport, error)
 	GetAll() ([]VetPassport, error)
-	GetByID(id int) (*VetPassport, error)
-	Update(id int, passport *VetPassport) (*VetPassport, error)
-	Delete(id int) error
+	GetByID(id uuid.UUID) (*VetPassport, error)
+	Update(id uuid.UUID, passport *VetPassport) (*VetPassport, error)
+	Delete(id uuid.UUID) error
 }
 
 var (

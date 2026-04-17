@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS vet_passport (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     chipping BOOLEAN DEFAULT FALSE,
     sterilization BOOLEAN DEFAULT FALSE,
     health_issues TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS vet_passport (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     fio VARCHAR(255) NOT NULL,
     telephone_number VARCHAR(20) NOT NULL,
     city VARCHAR(50),
@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS pet (
-    id SERIAL PRIMARY KEY,
-    vet_passport_id INT REFERENCES vet_passport(id),
-    seller_id INT REFERENCES users(id),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    vet_passport_id UUID REFERENCES vet_passport(id),
+    seller_id UUID REFERENCES users(id),
     pet_name VARCHAR(255) NOT NULL,
     species VARCHAR(50) NOT NULL,
     pet_age INT NOT NULL,
@@ -37,9 +37,25 @@ CREATE TABLE IF NOT EXISTS pet (
 );
 
 CREATE TABLE IF NOT EXISTS purchase_request (
-    id SERIAL PRIMARY KEY,
-    pet_id INT NOT NULL REFERENCES pet(id),
-    seller_id INT NOT NULL REFERENCES users(id),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    pet_id UUID NOT NULL REFERENCES pet(id),
+    buyer_id UUID NOT NULL REFERENCES users(id),
     status VARCHAR(50) DEFAULT 'pending',
     request_date TIMESTAMP DEFAULT NOW()
 );
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'uq_purchase_request_pet_buyer'
+    ) THEN
+        ALTER TABLE purchase_request
+            ADD CONSTRAINT uq_purchase_request_pet_buyer UNIQUE (pet_id, buyer_id);
+    END IF;
+END $$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_purchase_request_one_approved_per_pet
+    ON purchase_request (pet_id)
+    WHERE status = 'approved';

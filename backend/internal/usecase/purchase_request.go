@@ -1,6 +1,9 @@
 package usecase
 
-import "getapet-backend/internal/models"
+import (
+	"getapet-backend/internal/models"
+	"github.com/google/uuid"
+)
 
 type PurchaseRequestUsecase struct {
 	purchaseRequestRepo models.PurchaseRequestRepository
@@ -18,22 +21,42 @@ func (u *PurchaseRequestUsecase) GetAll() ([]models.PurchaseRequest, error) {
 	return u.purchaseRequestRepo.GetAll()
 }
 
-func (u *PurchaseRequestUsecase) GetByID(id int) (*models.PurchaseRequest, error) {
+func (u *PurchaseRequestUsecase) GetByID(id uuid.UUID) (*models.PurchaseRequest, error) {
 	return u.purchaseRequestRepo.GetByID(id)
 }
 
-func (u *PurchaseRequestUsecase) GetBySellerID(sellerID int) ([]models.PurchaseRequest, error) {
+func (u *PurchaseRequestUsecase) GetByBuyerID(buyerID uuid.UUID) ([]models.PurchaseRequest, error) {
+	return u.purchaseRequestRepo.GetByBuyerID(buyerID)
+}
+
+func (u *PurchaseRequestUsecase) GetBySellerID(sellerID uuid.UUID) ([]models.PurchaseRequest, error) {
 	return u.purchaseRequestRepo.GetBySellerID(sellerID)
 }
 
-func (u *PurchaseRequestUsecase) GetByPetID(petID int) ([]models.PurchaseRequest, error) {
+func (u *PurchaseRequestUsecase) GetByPetID(petID uuid.UUID) ([]models.PurchaseRequest, error) {
 	return u.purchaseRequestRepo.GetByPetID(petID)
 }
 
-func (u *PurchaseRequestUsecase) UpdateStatus(id int, _ int, status string) (*models.PurchaseRequest, error) {
+func (u *PurchaseRequestUsecase) UpdateStatus(id uuid.UUID, sellerID uuid.UUID, status string) (*models.PurchaseRequest, error) {
+	if sellerID != uuid.Nil {
+		return u.UpdateStatusBySeller(id, sellerID, status)
+	}
+
 	return u.purchaseRequestRepo.UpdateStatus(id, status)
 }
 
-func (u *PurchaseRequestUsecase) Delete(id int, _ int) error {
+func (u *PurchaseRequestUsecase) UpdateStatusBySeller(id uuid.UUID, sellerID uuid.UUID, status string) (*models.PurchaseRequest, error) {
+	return u.purchaseRequestRepo.UpdateStatusBySeller(id, sellerID, status)
+}
+
+func (u *PurchaseRequestUsecase) Delete(id uuid.UUID, buyerID uuid.UUID) error {
+	if buyerID != uuid.Nil {
+		return u.DeleteByBuyer(id, buyerID)
+	}
+
 	return u.purchaseRequestRepo.Delete(id)
+}
+
+func (u *PurchaseRequestUsecase) DeleteByBuyer(id uuid.UUID, buyerID uuid.UUID) error {
+	return u.purchaseRequestRepo.DeleteByBuyer(id, buyerID)
 }

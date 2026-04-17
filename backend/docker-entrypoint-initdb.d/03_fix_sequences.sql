@@ -1,4 +1,4 @@
-SELECT setval('vet_passport_id_seq', (SELECT COALESCE(MAX(id), 1) FROM vet_passport));
-SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
-SELECT setval('pet_id_seq', (SELECT COALESCE(MAX(id), 1) FROM pet));
-SELECT setval('purchase_request_id_seq', (SELECT COALESCE(MAX(id), 1) FROM purchase_request));
+-- SELECT setval('vet_passport_id_seq', (SELECT COALESCE(MAX(id), 1) FROM vet_passport));
+-- SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
+-- SELECT setval('pet_id_seq', (SELECT COALESCE(MAX(id), 1) FROM pet));
+-- SELECT setval('purchase_request_id_seq', (SELECT COALESCE(MAX(id), 1) FROM purchase_request));
