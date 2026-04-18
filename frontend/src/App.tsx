@@ -1,8 +1,15 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AppLayout } from "./components/layout/AppLayout";
+import { CatalogPage } from "./pages/CatalogPage";
+
 function App() {
   return (
-    <div>
-      <h1>GetAPet</h1>
-    </div>
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<CatalogPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AppLayout>
   );
 }
 

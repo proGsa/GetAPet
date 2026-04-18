@@ -2,20 +2,69 @@ package pet
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
+	"getapet-backend/internal/delivery/middleware"
+	"getapet-backend/internal/dto"
 	"getapet-backend/internal/models"
+
+	"github.com/google/uuid"
 )
 
+func getUserIDFromContext(r *http.Request) uuid.UUID {
+	val := r.Context().Value(middleware.UserIDKey)
+	if val == nil {
+		return uuid.Nil
+	}
+
+	idStr, ok := val.(string)
+	if !ok {
+		return uuid.Nil
+	}
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return uuid.Nil
+	}
+
+	return id
+}
+
+// CreatePet godoc
+// @Summary Создать питомца
+// @Tags pets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param pet body dto.CreatePetRequest true "Данные питомца"
+// @Success 201 {object} dto.PetResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 503 {object} ErrorResponse
+// @Router /api/pets [post]
 func (pr *PetRouter) CreatePet(w http.ResponseWriter, r *http.Request) {
 	if pr.PetUsecase == nil {
 		writeServiceUnavailable(w)
 		return
 	}
 
-	var createPet models.Pet
-	if err := json.NewDecoder(r.Body).Decode(&createPet); err != nil {
+	sellerID := getUserIDFromContext(r)
+	if sellerID == uuid.Nil {
+		writeErrorResponse(w, http.StatusUnauthorized, errors.New("unauthorized"), "Требуется авторизация")
+		return
+	}
+
+	var req dto.CreatePetRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
+		return
+	}
+
+	createPet, err := dto.CreatePetRequestFromDTO(req, sellerID)
+	if err != nil {
+		writeErrorResponse(w, http.StatusBadRequest, err, "Некорректный vet_passport_id")
 		return
 	}
 
@@ -28,6 +77,14 @@ func (pr *PetRouter) CreatePet(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponse(w, http.StatusCreated, createdPet)
 }
 
+// GetPets godoc
+// @Summary Получить список питомцев
+// @Tags pets
+// @Produce json
+// @Success 200 {array} dto.PetResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 503 {object} ErrorResponse
+// @Router /api/pets [get]
 func (pr *PetRouter) GetPets(w http.ResponseWriter, _ *http.Request) {
 	if pr.PetUsecase == nil {
 		writeServiceUnavailable(w)
@@ -43,6 +100,17 @@ func (pr *PetRouter) GetPets(w http.ResponseWriter, _ *http.Request) {
 	writeSuccessResponse(w, http.StatusOK, pets)
 }
 
+// GetPet godoc
+// @Summary Получить питомца по ID
+// @Tags pets
+// @Produce json
+// @Param id path string true "ID питомца"
+// @Success 200 {object} dto.PetResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 503 {object} ErrorResponse
+// @Router /api/pets/{id} [get]
 func (pr *PetRouter) GetPet(w http.ResponseWriter, r *http.Request) {
 	if pr.PetUsecase == nil {
 		writeServiceUnavailable(w)
@@ -68,6 +136,21 @@ func (pr *PetRouter) GetPet(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponse(w, http.StatusOK, pet)
 }
 
+// UpdatePet godoc
+// @Summary Обновить питомца
+// @Tags pets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "ID питомца"
+// @Param pet body dto.UpdatePetRequest true "Обновленные данные питомца"
+// @Success 200 {object} dto.PetResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 503 {object} ErrorResponse
+// @Router /api/pets/{id} [put]
 func (pr *PetRouter) UpdatePet(w http.ResponseWriter, r *http.Request) {
 	if pr.PetUsecase == nil {
 		writeServiceUnavailable(w)
@@ -80,14 +163,17 @@ func (pr *PetRouter) UpdatePet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updatePet models.Pet
-	if err := json.NewDecoder(r.Body).Decode(&updatePet); err != nil {
+	var req dto.UpdatePetRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeErrorResponse(w, http.StatusBadRequest, err, "Неверный формат JSON")
 		return
 	}
 
+	updatePet := dto.UpdatePetRequestToModel(req)
+
 	// sellerID will be taken from auth middleware later.
-	updatedPet, err := pr.PetUsecase.Update(id, 0, &updatePet)
+	sellerID := getUserIDFromContext(r)
+	updatedPet, err := pr.PetUsecase.Update(id, sellerID, &updatePet)
 	if err != nil {
 		if err == models.ErrPetNotFound {
 			writeErrorResponse(w, http.StatusNotFound, err, "Питомец не найден")
@@ -100,6 +186,19 @@ func (pr *PetRouter) UpdatePet(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponse(w, http.StatusOK, updatedPet)
 }
 
+// DeletePet godoc
+// @Summary Удалить питомца
+// @Tags pets
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "ID питомца"
+// @Success 204 "No Content"
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 503 {object} ErrorResponse
+// @Router /api/pets/{id} [delete]
 func (pr *PetRouter) DeletePet(w http.ResponseWriter, r *http.Request) {
 	if pr.PetUsecase == nil {
 		writeServiceUnavailable(w)
@@ -112,8 +211,13 @@ func (pr *PetRouter) DeletePet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// sellerID will be taken from auth middleware later.
-	err = pr.PetUsecase.Delete(id, 0)
+	sellerID := getUserIDFromContext(r)
+	if sellerID == uuid.Nil {
+		writeErrorResponse(w, http.StatusUnauthorized, errors.New("unauthorized"), "Требуется авторизация")
+		return
+	}
+
+	err = pr.PetUsecase.Delete(id, sellerID)
 	if err != nil {
 		if err == models.ErrPetNotFound {
 			writeErrorResponse(w, http.StatusNotFound, err, "Питомец не найден")

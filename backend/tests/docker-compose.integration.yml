@@ -1,0 +1,25 @@
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: getapet-postgres-test
+    environment:
+      POSTGRES_DB: getapet_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d getapet_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+
+  integration-tests:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    container_name: getapet-integration-tests
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    environment:
+      INTEGRATION_DB_DSN: postgres://test:test@postgres-test:5432/getapet_test?sslmode=disable
+    command: ["tests/run-integration-tests.sh"]

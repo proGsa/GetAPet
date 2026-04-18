@@ -27,6 +27,13 @@ func getDB() (*sql.DB, error) {
 	return sql.Open("postgres", connStr)
 }
 
+// @title GetAPet Backend API
+// @version 1.0
+// @description An aggregator of pet lists from shelters and private individuals.
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter only JWT token (without Bearer prefix)
 func main() {
 	db, err := getDB()
 	if err != nil {
