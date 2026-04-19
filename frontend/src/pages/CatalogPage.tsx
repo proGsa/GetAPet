@@ -1,29 +1,60 @@
 import { useEffect, useMemo, useState } from "react";
 import { petsApi } from "../api/pets";
+import { usersApi } from "../api/users";
 import { AlertMessage } from "../components/ui/AlertMessage";
 import { EmptyState } from "../components/ui/EmptyState";
 import { LoadingState } from "../components/ui/LoadingState";
+import { useAuth } from "../hooks/useAuth";
 import type { Pet } from "../types/pet";
+import type { User } from "../types/user";
 import { getErrorMessage } from "../utils/error";
-import { formatPrice, shortId } from "../utils/format";
+import { formatPrice } from "../utils/format";
 
 export function CatalogPage() {
+  const { user, token, mode } = useAuth();
+
   const [pets, setPets] = useState<Pet[]>([]);
+  const [usersMap, setUsersMap] = useState<Record<string, User>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [query, setQuery] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
   const [activeOnly, setActiveOnly] = useState(true);
+  const [myOnly, setMyOnly] = useState(false);
+
+  const canFilterByMine = Boolean(user && mode === "seller");
 
   useEffect(() => {
-    const loadPets = async () => {
+    if (!canFilterByMine) {
+      setMyOnly(false);
+    }
+  }, [canFilterByMine]);
+
+  useEffect(() => {
+    const loadData = async () => {
       setLoading(true);
       setError(null);
 
       try {
         const petsResponse = await petsApi.list();
         setPets(petsResponse);
+
+        if (!token) {
+          setUsersMap({});
+          return;
+        }
+
+        try {
+          const usersResponse = await usersApi.list(token);
+          const nextUsersMap = usersResponse.reduce<Record<string, User>>((accumulator, currentUser) => {
+            accumulator[currentUser.id] = currentUser;
+            return accumulator;
+          }, {});
+          setUsersMap(nextUsersMap);
+        } catch {
+          setUsersMap({});
+        }
       } catch (fetchError) {
         setError(getErrorMessage(fetchError, "Не удалось загрузить данные каталога"));
       } finally {
@@ -31,8 +62,8 @@ export function CatalogPage() {
       }
     };
 
-    void loadPets();
-  }, []);
+    void loadData();
+  }, [token]);
 
   const speciesOptions = useMemo(() => {
     const options = new Set<string>();
@@ -53,6 +84,10 @@ export function CatalogPage() {
         return false;
       }
 
+      if (myOnly && user && pet.seller_id !== user.id) {
+        return false;
+      }
+
       if (speciesFilter !== "all" && pet.species !== speciesFilter) {
         return false;
       }
@@ -67,16 +102,16 @@ export function CatalogPage() {
 
       return searchable.includes(normalizedQuery);
     });
-  }, [activeOnly, pets, query, speciesFilter]);
+  }, [activeOnly, myOnly, pets, query, speciesFilter, user]);
 
   return (
     <section className="page-content">
       <div className="page-title-row">
         <h1>Каталог питомцев</h1>
-        <p>объявления от частных владельцев и приютов</p>
+        <p>Объявления от частных владельцев и приютов.</p>
       </div>
 
-      <div className="filter-bar">
+      <div className="filter-bar catalog-filter-bar">
         <label>
           Поиск
           <input
@@ -96,15 +131,27 @@ export function CatalogPage() {
             ))}
           </select>
         </label>
+        <div className="catalog-filter-toggles">
+          <label className="toggle-field compact-toggle">
+            <input
+              type="checkbox"
+              checked={activeOnly}
+              onChange={(event) => setActiveOnly(event.target.checked)}
+            />
+            Только активные
+          </label>
 
-        <label className="toggle-field compact-toggle">
-          <input
-            type="checkbox"
-            checked={activeOnly}
-            onChange={(event) => setActiveOnly(event.target.checked)}
-          />
-          Только активные
-        </label>
+          {canFilterByMine ? (
+            <label className="toggle-field compact-toggle">
+              <input
+                type="checkbox"
+                checked={myOnly}
+                onChange={(event) => setMyOnly(event.target.checked)}
+              />
+              Только мои объявления
+            </label>
+          ) : null}
+        </div>
       </div>
 
       {loading ? <LoadingState label="Загрузка каталога..." /> : null}
@@ -119,38 +166,41 @@ export function CatalogPage() {
 
       {!loading && !error && filteredPets.length > 0 ? (
         <div className="card-grid">
-          {filteredPets.map((pet) => (
-            <article key={pet.id} className="pet-card">
-              <div className="pet-card-main">
-                <p className="pet-card-species">{pet.species || "Неизвестный вид"}</p>
-                <h2>{pet.pet_name}</h2>
-                <p className="pet-card-desc">{pet.pet_description || "Описание пока не добавлено"}</p>
-              </div>
+          {filteredPets.map((pet) => {
+            const seller = usersMap[pet.seller_id];
+            return (
+              <article key={pet.id} className="pet-card">
+                <div className="pet-card-main">
+                  <p className="pet-card-species">{pet.species || "Неизвестный вид"}</p>
+                  <h2>{pet.pet_name}</h2>
+                  <p className="pet-card-desc">{pet.pet_description || "Описание пока не добавлено"}</p>
+                </div>
 
-              <dl className="pet-metadata">
-                <div>
-                  <dt>Возраст</dt>
-                  <dd>{pet.pet_age}</dd>
-                </div>
-                <div>
-                  <dt>Порода</dt>
-                  <dd>{pet.breed || "Не указана"}</dd>
-                </div>
-                <div>
-                  <dt>Продавец</dt>
-                  <dd>{`ID ${shortId(pet.seller_id)}`}</dd>
-                </div>
-                <div>
-                  <dt>Цена</dt>
-                  <dd>{formatPrice(pet.price)}</dd>
-                </div>
-              </dl>
+                <dl className="pet-metadata">
+                  <div>
+                    <dt>Возраст</dt>
+                    <dd>{pet.pet_age}</dd>
+                  </div>
+                  <div>
+                    <dt>Порода</dt>
+                    <dd>{pet.breed || "Не указана"}</dd>
+                  </div>
+                  <div>
+                    <dt>Продавец</dt>
+                    <dd>{seller?.fio ?? "Продавец не указан"}</dd>
+                  </div>
+                  <div>
+                    <dt>Цена</dt>
+                    <dd>{formatPrice(pet.price)}</dd>
+                  </div>
+                </dl>
 
-              <button type="button" className="primary-button inline-button" disabled>
-                Подробнее
-              </button>
-            </article>
-          ))}
+                <button type="button" className="primary-button inline-button" disabled>
+                  Подробнее
+                </button>
+              </article>
+            );
+          })}
         </div>
       ) : null}
     </section>
