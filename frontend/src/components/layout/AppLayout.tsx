@@ -29,6 +29,13 @@ export function AppLayout({ children }: AppLayoutProps) {
           <NavLink to="/" className={linkClassName} end>
             Каталог
           </NavLink>
+
+          {user && mode === "seller" ? (
+            <NavLink to="/my-pets" className={linkClassName}>
+              Мои объявления
+            </NavLink>
+          ) : null}
+
           {user ? (
             <NavLink to="/profile" className={linkClassName}>
               Профиль
