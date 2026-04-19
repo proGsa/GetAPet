@@ -144,13 +144,46 @@ p {
   flex-wrap: wrap;
 }
 
-.user-role {
-  padding: 0.08rem 0.38rem;
-  border: 1px solid var(--border);
+.topbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+
+.mode-switch-button {
+  border: 0;
+  margin: 0;
+  padding: 0.2rem 0.56rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: transparent;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.mode-switch-button + .mode-switch-button {
+  border-left: 1px solid var(--border-strong);
+}
+
+.mode-switch-button:hover {
   background: var(--surface-strong);
-  font-size: 0.7rem;
-  font-family: "JetBrains Mono", "Consolas", monospace;
-  text-transform: lowercase;
+}
+
+.mode-switch-button.active {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  font-weight: 700;
 }
 
 .page-main {
@@ -218,6 +251,21 @@ p {
   gap: 0.72rem;
 }
 
+.auth-login-form {
+  display: grid;
+  gap: 0.72rem;
+  width: min(360px, 100%);
+  margin-inline: auto;
+}
+
+.auth-login-form button {
+  width: 100%;
+}
+
+.auth-login-hint {
+  text-align: center;
+}
+
 label {
   display: grid;
   gap: 0.3rem;
@@ -227,6 +275,16 @@ label {
 
 .wide-label {
   grid-column: 1 / -1;
+}
+
+.auth-row-break {
+  grid-column: 1 / -1;
+  height: 0;
+}
+
+.profile-row-break {
+  grid-column: 1 / -1;
+  height: 0;
 }
 
 input,
@@ -275,10 +333,34 @@ textarea {
   gap: 0.46rem;
 }
 
+.profile-button-row {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-right-actions {
+  display: flex;
+  gap: 0.46rem;
+  margin-left: auto;
+}
+
+.profile-action-button {
+  width: 180px;
+  min-width: 180px;
+  height: 38px;
+}
+
+.profile-save-button {
+  width: 230px;
+  min-width: 230px;
+  white-space: nowrap;
+}
+
 .primary-button,
 .secondary-button,
 .danger-button,
-.ghost-button {
+.ghost-button,
+.danger-outline-button {
   border: 1px solid transparent;
   padding: 0.46rem 0.76rem;
   cursor: pointer;
@@ -330,6 +412,18 @@ textarea {
 
 .ghost-button:hover {
   background: var(--surface-strong);
+}
+
+.danger-outline-button {
+  border-color: var(--danger-strong);
+  color: var(--danger-strong);
+  background: transparent;
+}
+
+.danger-outline-button:hover {
+  background: #f8eeeb;
+  border-color: var(--danger-strong);
+  color: var(--danger-strong);
 }
 
 .inline-button {
@@ -569,6 +663,10 @@ a[aria-disabled="true"] {
     justify-content: flex-start;
   }
 
+  .topbar-actions {
+    justify-content: flex-start;
+  }
+
   .details-layout {
     grid-template-columns: 1fr;
   }
@@ -593,5 +691,26 @@ a[aria-disabled="true"] {
 
   .brand-link {
     font-size: 1.42rem;
+  }
+
+  .profile-button-row {
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .profile-right-actions {
+    width: 100%;
+    margin-left: 0;
+    flex-direction: column;
+  }
+
+  .profile-action-button {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .profile-save-button {
+    width: 100%;
+    min-width: 100%;
   }
 }
