@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"context"
 
 	_ "getapet-backend/docs"
 	"getapet-backend/internal/delivery/http/pet"
@@ -97,4 +98,8 @@ func healthHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(HealthResponse{Status: "ok"})
+}
+
+func (s *HTTPServer) Shutdown(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }

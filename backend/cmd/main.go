@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	httpserver "getapet-backend/internal/delivery/http"
 
@@ -53,7 +57,25 @@ func main() {
 	fmt.Println("DB connected! Starting HTTP server on :8080")
 
 	server := httpserver.NewHTTPServer(":8080")
-	if err := server.Start(db); err != nil {
-		log.Fatal("HTTP server failed:", err)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	go func() {
+		if err := server.Start(db); err != nil {
+			log.Fatal("HTTP server failed:", err)
+		}
+	}()
+
+	<-ctx.Done()
+
+	fmt.Println("Shutting down server...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Println("Shutdown error:", err)
 	}
+
+	fmt.Println("Server stopped gracefully")
 }
