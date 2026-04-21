@@ -1,6 +1,7 @@
 package httpserver
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"context"
 
 	_ "getapet-backend/docs"
 	"getapet-backend/internal/delivery/http/pet"
