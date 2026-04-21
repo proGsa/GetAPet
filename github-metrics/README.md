@@ -74,14 +74,6 @@ python github-metrics/load_github_metrics.py
    - `GitHub Issues`,
    - `GitHub Pull Requests`.
 
-Рекомендуемые метрики:
-- количество закрытых `issues` по неделям,
-- количество `merged` PR по неделям,
-- медианный `cycle_time_hours` PR,
-- медианный `time_to_close_hours` issues,
-- количество коммитов по неделям,
-- распределение PR по `author_login`.
-
 ## 6) Остановка
 
 ```bash
