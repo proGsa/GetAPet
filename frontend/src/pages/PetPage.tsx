@@ -117,7 +117,7 @@ export function PetPage() {
   }, [id, token]);
 
   useEffect(() => {
-    if (!token || !user || !pet || mode !== "buyer" || user.id === pet.seller_id || !pet.is_active) {
+    if (!token || !user || !pet || mode !== "buyer" || user.id === pet.seller_id) {
       setHasMyRequest(false);
       return;
     }
@@ -161,7 +161,6 @@ export function PetPage() {
           pet &&
           mode === "buyer" &&
           user.id !== pet.seller_id &&
-          pet.is_active &&
           hasMyRequest,
       ),
     [hasMyRequest, mode, pet, token, user],
@@ -381,13 +380,16 @@ export function PetPage() {
               ) : null}
 
               {canViewRequestStatus ? (
-                <button type="button" className="secondary-button inline-button">
+                <Link to={`/requests?pet=${pet.id}`} className="secondary-button inline-button">
                   Посмотреть статус заявки
-                </button>
+                </Link>
               ) : null}
 
               {canManagePet ? (
                 <>
+                  <Link to={`/requests?pet=${pet.id}`} className="primary-button inline-button">
+                    Заявки по этому объявлению
+                  </Link>
                   <button
                     type="button"
                     className="secondary-button inline-button"

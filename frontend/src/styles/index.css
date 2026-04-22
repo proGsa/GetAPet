@@ -251,6 +251,11 @@ p {
   align-items: end;
 }
 
+.requests-filter-bar {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: end;
+}
+
 .catalog-filter-toggles {
   display: flex;
   flex-wrap: wrap;
@@ -539,6 +544,19 @@ a[aria-disabled="true"] {
   margin: 0;
   font-weight: 600;
   font-size: 0.88rem;
+}
+
+.request-card-title {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.request-metadata {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.request-person-phone {
+  font-weight: 400;
 }
 
 .stack-list {
