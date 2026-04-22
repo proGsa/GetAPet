@@ -23,6 +23,14 @@ services:
       - "8080:8080"
     command: sh -c "swag init -d ./cmd,./internal -g main.go --parseInternal --parseDependency --parseDepth 2 -o ./docs && go run ./cmd"
 
+  frontend:
+    build: ./frontend
+    container_name: getapet_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
   test:
     build: ./backend
     depends_on:
