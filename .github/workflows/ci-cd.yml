@@ -132,28 +132,3 @@ jobs:
 
           git commit -m "update swagger [skip ci]"
           git push
-
-  deploy:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: [build, docs]
-    if: github.ref == 'refs/heads/dev'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: |
-          docker build -t getapet-backend:latest ./backend
-
-      - name: Deploy (SSH example)
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
-          script: |
-            cd /app/getapet
-            git pull
-            docker compose down
-            docker compose up -d --build
