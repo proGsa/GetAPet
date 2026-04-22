@@ -132,9 +132,14 @@ export function PetWithPassportForm({
 
       <label>
         Пол
-        <select value={form.pet.pet_gender} onChange={(event) => setPetString("pet_gender", event.target.value)} required>
-          <option value="male">Самец</option>
-          <option value="female">Самка</option>
+        <select
+          value={form.pet.pet_gender}
+          onChange={(event) => setPetString("pet_gender", event.target.value)}
+          required
+        >
+          <option value="Мальчик">Мальчик</option>
+          <option value="Девочка">Девочка</option>
+          <option value="Не указан">Не указан</option>
         </select>
       </label>
 

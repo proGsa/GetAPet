@@ -17,6 +17,7 @@ import { formatPrice } from "../utils/format";
 import {
   createEmptyPetCreatePayload,
   createEmptyVetPassportPayload,
+  normalizePetGender,
   toPetUpdatePayload,
 } from "../utils/pet";
 
@@ -26,7 +27,7 @@ const toPetCreatePayloadFromPet = (pet: Pet): PetCreatePayload => ({
   species: pet.species,
   pet_age: pet.pet_age,
   color: pet.color,
-  pet_gender: pet.pet_gender,
+  pet_gender: normalizePetGender(pet.pet_gender),
   breed: pet.breed,
   pedigree: pet.pedigree,
   good_with_children: pet.good_with_children,
@@ -217,9 +218,11 @@ export function MyPetsPage() {
             ...updatedPet,
             seller_id: item.seller_id,
             vet_passport_id: item.vet_passport_id,
+            is_active: item.is_active,
           };
         }),
       );
+
       setEditingPetId(null);
       setMessage("Объявление обновлено.");
     } catch (updateError) {
@@ -263,7 +266,11 @@ export function MyPetsPage() {
 
     try {
       if (pet.is_active) {
-        const deactivated = await petsApi.update(pet.id, toPetUpdatePayload(toPetCreatePayloadFromPet(pet)), token);
+        const deactivated = await petsApi.update(
+          pet.id,
+          toPetUpdatePayload(toPetCreatePayloadFromPet(pet)),
+          token,
+        );
         setPets((current) =>
           current.map((item) => {
             if (item.id !== pet.id) {
@@ -281,8 +288,6 @@ export function MyPetsPage() {
         );
         setMessage("Объявление переведено в неактивные.");
       } else {
-        // Backend currently does not expose direct "activate" in update payload.
-        // Recreate ad as active, then remove archived one.
         const recreated = await petsApi.create(toPetCreatePayloadFromPet(pet), token);
         await petsApi.remove(pet.id, token);
         setPets((current) =>
@@ -345,13 +350,21 @@ export function MyPetsPage() {
             <article key={pet.id} className="panel compact-panel">
               <div className="panel-header-row">
                 <div>
-                  <h2>{pet.pet_name}</h2>
+                  <div className="pet-card-tags">
+                    <h2>{pet.pet_name}</h2>
+                    <span className={`status-badge ${pet.is_active ? "status-active" : "status-inactive"}`}>
+                      {pet.is_active ? "Активно" : "Неактивно"}
+                    </span>
+                  </div>
                   <p>
                     {pet.species} • {formatPrice(pet.price)}
                   </p>
                 </div>
 
                 <div className="button-row">
+                  <Link to={`/pets/${pet.id}`} className="secondary-button inline-button">
+                    Подробнее
+                  </Link>
                   <button
                     type="button"
                     className="secondary-button"
@@ -361,7 +374,7 @@ export function MyPetsPage() {
                   </button>
                   <button
                     type="button"
-                    className="secondary-button"
+                    className="secondary-button my-pets-toggle-button"
                     disabled={isSubmitting}
                     onClick={() => {
                       void handleToggleActive(pet);
@@ -399,3 +412,4 @@ export function MyPetsPage() {
     </section>
   );
 }
+
