@@ -70,7 +70,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+      
+      # ===== BACKEND =====
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -79,6 +80,34 @@ jobs:
       - name: Build
         working-directory: backend
         run: go build -o ./bin/app ./cmd
+        
+      - name: Build backend Docker image
+        run: docker build -t getapet-backend:latest ./backend
+      
+      # ===== FRONTEND =====
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Build frontend Docker image
+        run: docker build -t getapet-frontend:latest ./frontend
+
+      # ===== DATABASE =====
+      - name: Build database Docker image
+        run: |
+          docker build -t getapet-db:latest -f backend/postgres/Dockerfile ./backend
+        
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
