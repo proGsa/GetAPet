@@ -236,6 +236,7 @@ p {
   gap: 0.7rem;
 }
 
+
 .filter-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -487,6 +488,13 @@ a[aria-disabled="true"] {
   gap: 0.3rem;
 }
 
+.pet-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .pet-card-main h2 {
   font-size: 1.18rem;
   line-height: 1.14;
@@ -584,6 +592,22 @@ a[aria-disabled="true"] {
   gap: 0.5rem;
 }
 
+.pet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pet-details-actions {
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+.my-pets-toggle-button {
+  order: -1;
+}
+
 .loading-state {
   display: inline-flex;
   align-items: center;
@@ -670,6 +694,18 @@ a[aria-disabled="true"] {
 }
 
 .status-rejected {
+  color: var(--danger-strong);
+  background: #f8eeeb;
+  border-color: #d7b7b1;
+}
+
+.status-active {
+  color: var(--ok);
+  background: #ebf4e8;
+  border-color: #bdd2b8;
+}
+
+.status-inactive {
   color: var(--danger-strong);
   background: #f8eeeb;
   border-color: #d7b7b1;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { petsApi } from "../api/pets";
 import { usersApi } from "../api/users";
 import { AlertMessage } from "../components/ui/AlertMessage";
@@ -131,6 +132,7 @@ export function CatalogPage() {
             ))}
           </select>
         </label>
+
         <div className="catalog-filter-toggles">
           <label className="toggle-field compact-toggle">
             <input
@@ -171,7 +173,12 @@ export function CatalogPage() {
             return (
               <article key={pet.id} className="pet-card">
                 <div className="pet-card-main">
-                  <p className="pet-card-species">{pet.species || "Неизвестный вид"}</p>
+                  <div className="pet-card-tags">
+                    <p className="pet-card-species">{pet.species || "Неизвестный вид"}</p>
+                    <span className={`status-badge ${pet.is_active ? "status-active" : "status-inactive"}`}>
+                      {pet.is_active ? "Активно" : "Неактивно"}
+                    </span>
+                  </div>
                   <h2>{pet.pet_name}</h2>
                   <p className="pet-card-desc">{pet.pet_description || "Описание пока не добавлено"}</p>
                 </div>
@@ -195,9 +202,9 @@ export function CatalogPage() {
                   </div>
                 </dl>
 
-                <button type="button" className="primary-button inline-button" disabled>
+                <Link to={`/pets/${pet.id}`} className="primary-button inline-button">
                   Подробнее
-                </button>
+                </Link>
               </article>
             );
           })}

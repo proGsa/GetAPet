@@ -7,7 +7,7 @@ export const createEmptyPetCreatePayload = (): PetCreatePayload => ({
   species: "",
   pet_age: 0,
   color: "",
-  pet_gender: "male",
+  pet_gender: "Не указан",
   breed: "",
   pedigree: false,
   good_with_children: true,
@@ -15,6 +15,18 @@ export const createEmptyPetCreatePayload = (): PetCreatePayload => ({
   pet_description: "",
   price: 0,
 });
+
+export const normalizePetGender = (value: string): string => {
+  if (!value) {
+    return "Не указан";
+  }
+
+  if (value === "Мальчик" || value === "Девочка" || value === "Не указан") {
+    return value;
+  }
+
+  return "Не указан";
+};
 
 export const toPetUpdatePayload = (payload: PetCreatePayload): PetUpdatePayload => ({
   pet_name: payload.pet_name,
