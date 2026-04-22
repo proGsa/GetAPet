@@ -8,8 +8,8 @@ import (
 
 type Pet struct {
 	ID               uuid.UUID `json:"id" db:"id"`
-	VetPassportID    uuid.UUID       `json:"vet_passport_id" db:"vet_passport_id"`
-	SellerID         uuid.UUID       `json:"seller_id" db:"seller_id"`
+	VetPassportID    uuid.UUID `json:"vet_passport_id" db:"vet_passport_id"`
+	SellerID         uuid.UUID `json:"seller_id" db:"seller_id"`
 	PetName          string    `json:"pet_name" db:"pet_name"`
 	Species          string    `json:"species" db:"species"`
 	PetAge           int       `json:"pet_age" db:"pet_age"`

@@ -1,8 +1,8 @@
 package usecase
 
-import 
-("getapet-backend/internal/models"
-"github.com/google/uuid"
+import (
+	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -49,11 +49,11 @@ func (u *UserUsecase) Delete(id uuid.UUID) error {
 	return u.userRepo.Delete(id)
 }
 
-func (u *UserUsecase) Login(login string, password string) (*models.User, error)  {
+func (u *UserUsecase) Login(login string, password string) (*models.User, error) {
 	user, err := u.userRepo.GetByLogin(login)
 	if err != nil {
 		if err == models.ErrUserNotFound {
-			return nil,models.ErrInvalidCredentials
+			return nil, models.ErrInvalidCredentials
 		}
 		return nil, err
 	}
