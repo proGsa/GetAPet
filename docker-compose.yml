@@ -39,6 +39,44 @@ services:
       - .env
     command: go test ./...
 
+  lint:
+    build: ./backend
+    working_dir: /app
+    command: sh -c "go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest && golangci-lint run ./..."
+  fmt:
+    build: ./backend
+    working_dir: /app
+    command: sh -c "go install golang.org/x/tools/cmd/goimports@v0.40.0 && goimports -w ."
+  security:
+    build: ./backend
+    command: sh -c "go install golang.org/x/vuln/cmd/govulncheck@v1.1.4 && /go/bin/govulncheck ./..."
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    container_name: getapet_elasticsearch
+    profiles:
+      - metrics
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.3
+    container_name: getapet_kibana
+    profiles:
+      - metrics
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
 volumes:
   pgdata:
+  esdata:
 

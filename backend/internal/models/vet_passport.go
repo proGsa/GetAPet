@@ -1,16 +1,17 @@
 package models
 
-import ("errors"
-"github.com/google/uuid"
+import (
+	"errors"
+	"github.com/google/uuid"
 )
 
 type VetPassport struct {
-	ID                 uuid.UUID    `json:"id" db:"id"`
-	Chipping           bool   `json:"chipping" db:"chipping"`
-	Sterilization      bool   `json:"sterilization" db:"sterilization"`
-	HealthIssues       string `json:"health_issues" db:"health_issues"`
-	Vaccinations       string `json:"vaccinations" db:"vaccinations"`
-	ParasiteTreatments string `json:"parasite_treatments" db:"parasite_treatments"`
+	ID                 uuid.UUID `json:"id" db:"id"`
+	Chipping           bool      `json:"chipping" db:"chipping"`
+	Sterilization      bool      `json:"sterilization" db:"sterilization"`
+	HealthIssues       string    `json:"health_issues" db:"health_issues"`
+	Vaccinations       string    `json:"vaccinations" db:"vaccinations"`
+	ParasiteTreatments string    `json:"parasite_treatments" db:"parasite_treatments"`
 }
 
 type VetPassportRepository interface {

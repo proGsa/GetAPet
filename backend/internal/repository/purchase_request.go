@@ -111,7 +111,9 @@ func (r *PurchaseRequestRepository) GetAll() ([]models.PurchaseRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	requests := make([]models.PurchaseRequest, 0)
 	for rows.Next() {
@@ -176,7 +178,9 @@ func (r *PurchaseRequestRepository) GetByBuyerID(buyerID uuid.UUID) ([]models.Pu
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	requests := make([]models.PurchaseRequest, 0)
 	for rows.Next() {
@@ -214,7 +218,9 @@ func (r *PurchaseRequestRepository) GetBySellerID(sellerID uuid.UUID) ([]models.
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	requests := make([]models.PurchaseRequest, 0)
 	for rows.Next() {
@@ -252,7 +258,9 @@ func (r *PurchaseRequestRepository) GetByPetID(petID uuid.UUID) ([]models.Purcha
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	requests := make([]models.PurchaseRequest, 0)
 	for rows.Next() {

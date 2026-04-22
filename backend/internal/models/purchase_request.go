@@ -10,7 +10,7 @@ type PurchaseRequest struct {
 	ID          uuid.UUID `json:"id" db:"id"`
 	PetID       uuid.UUID `json:"pet_id" db:"pet_id"`
 	BuyerID     uuid.UUID `json:"buyer_id" db:"buyer_id"`
-	SellerID     uuid.UUID `json:"seller_id"`
+	SellerID    uuid.UUID `json:"seller_id"`
 	Status      string    `json:"status" db:"status"`
 	RequestDate time.Time `json:"request_date" db:"request_date"`
 }

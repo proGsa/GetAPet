@@ -1,7 +1,8 @@
 package usecase
 
-import ("getapet-backend/internal/models"
-"github.com/google/uuid"
+import (
+	"getapet-backend/internal/models"
+	"github.com/google/uuid"
 )
 
 type PetUsecase struct {

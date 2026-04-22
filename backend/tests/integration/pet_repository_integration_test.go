@@ -149,11 +149,11 @@ func TestPetRepositoryIntegration(t *testing.T) {
 		})
 
 		updated, err := repo.Update(created.ID, &models.Pet{
-			PetName:       "New",
-			Species:       "cat",
-			PetAge:        5,
-			IsActive:      false,
-			Price:         999,
+			PetName:  "New",
+			Species:  "cat",
+			PetAge:   5,
+			IsActive: false,
+			Price:    999,
 		})
 		if err != nil {
 			t.Fatalf("update: %v", err)
@@ -198,7 +198,7 @@ func TestPetRepositoryIntegration(t *testing.T) {
 	})
 	t.Run("Delete", func(t *testing.T) {
 		clearPetTable(t, db)
-	
+
 		pet, err := repo.Create(&models.Pet{
 			VetPassportID: uuid.New(),
 			SellerID:      uuid.New(),
@@ -211,13 +211,13 @@ func TestPetRepositoryIntegration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("create pet: %v", err)
 		}
-	
+
 		// delete
 		err = repo.Delete(pet.ID)
 		if err != nil {
 			t.Fatalf("delete: %v", err)
 		}
-	
+
 		// check that it's gone
 		_, err = repo.GetByID(pet.ID)
 		if !errors.Is(err, repository.ErrPetNotFound) {

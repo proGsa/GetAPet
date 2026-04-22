@@ -63,7 +63,9 @@ func (r *PetRepository) GetAll() ([]models.Pet, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var pets []models.Pet
 
@@ -117,7 +119,9 @@ func (r *PetRepository) GetBySellerID(sellerID uuid.UUID) ([]models.Pet, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var pets []models.Pet
 
@@ -243,6 +247,7 @@ func (r *PetRepository) GetByID(id uuid.UUID) (*models.Pet, error) {
 
 	return &p, nil
 }
+
 //?
 // func (r *PetRepository) CheckBelonging(_, _ uuid.UUID) (bool, error) {
 // 	return false, errors.New("not implemented")
@@ -259,7 +264,7 @@ func (r *PetRepository) CheckBelonging(petID, sellerID uuid.UUID) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-	
+
 	return exists, nil
 }
 
