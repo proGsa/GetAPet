@@ -37,6 +37,12 @@ export function AppLayout({ children }: AppLayoutProps) {
           ) : null}
 
           {user ? (
+            <NavLink to="/requests" className={linkClassName}>
+              Мои заявки
+            </NavLink>
+          ) : null}
+
+          {user ? (
             <NavLink to="/profile" className={linkClassName}>
               Профиль
             </NavLink>
