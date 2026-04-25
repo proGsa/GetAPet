@@ -236,6 +236,9 @@ definitions:
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
+      is_active:
+        example: true
+        type: boolean
       pedigree:
         example: true
         type: boolean
@@ -281,6 +284,9 @@ definitions:
         example: false
         type: boolean
       good_with_children:
+        example: true
+        type: boolean
+      is_active:
         example: true
         type: boolean
       pedigree:
