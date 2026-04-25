@@ -92,7 +92,7 @@ func PetToDTO(p models.Pet) PetResponse {
 		GoodWithChildren: p.GoodWithChildren,
 		GoodWithAnimals:  p.GoodWithAnimals,
 		PetDescription:   p.PetDescription,
-		IsActive:   p.IsActive,
+		IsActive:         p.IsActive,
 		Price:            p.Price,
 	}
 }
