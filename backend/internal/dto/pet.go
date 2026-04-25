@@ -31,6 +31,7 @@ type UpdatePetRequest struct {
 	GoodWithChildren bool    `json:"good_with_children" example:"true"`
 	GoodWithAnimals  bool    `json:"good_with_animals" example:"false"`
 	PetDescription   string  `json:"pet_description" validate:"omitempty,max=1000" example:"Спокойный и ласковый"`
+	IsActive         bool    `json:"is_active" example:"true"`
 	Price            float64 `json:"price" validate:"required,gte=0" example:"18000"`
 }
 
@@ -51,6 +52,7 @@ type PetResponse struct {
 	GoodWithChildren bool    `json:"good_with_children" example:"true"`
 	GoodWithAnimals  bool    `json:"good_with_animals" example:"false"`
 	PetDescription   string  `json:"pet_description" example:"Очень дружелюбный"`
+	IsActive         bool    `json:"is_active" example:"true"`
 	Price            float64 `json:"price" example:"15000"`
 }
 
@@ -90,6 +92,7 @@ func PetToDTO(p models.Pet) PetResponse {
 		GoodWithChildren: p.GoodWithChildren,
 		GoodWithAnimals:  p.GoodWithAnimals,
 		PetDescription:   p.PetDescription,
+		IsActive:   p.IsActive,
 		Price:            p.Price,
 	}
 }
@@ -113,6 +116,7 @@ func UpdatePetRequestToModel(req UpdatePetRequest) models.Pet {
 		GoodWithChildren: req.GoodWithChildren,
 		GoodWithAnimals:  req.GoodWithAnimals,
 		PetDescription:   req.PetDescription,
+		IsActive:         req.IsActive,
 		Price:            req.Price,
 	}
 }

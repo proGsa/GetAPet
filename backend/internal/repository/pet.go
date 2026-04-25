@@ -173,8 +173,9 @@ func (r *PetRepository) Update(id uuid.UUID, p *models.Pet) (*models.Pet, error)
 		good_with_children = $8,
 		good_with_animals = $9,
 		pet_description = $10,
-		price = $11
-	WHERE id = $12
+		is_active = $11,
+		price = $12
+	WHERE id = $13
 	RETURNING id
 	`
 
@@ -192,6 +193,7 @@ func (r *PetRepository) Update(id uuid.UUID, p *models.Pet) (*models.Pet, error)
 		p.GoodWithChildren,
 		p.GoodWithAnimals,
 		p.PetDescription,
+		p.IsActive,
 		p.Price,
 		id,
 	).Scan(&updatedID)

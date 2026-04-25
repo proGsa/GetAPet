@@ -93,6 +93,62 @@ func TestPetUsecase_Update_NotOwner(t *testing.T) {
 	}
 }
 
+func TestPetUsecase_Update_IsActive_FalseToTrue(t *testing.T) {
+	currentStatus := false
+
+	repo := &mockPetRepo{
+		checkBelongingFn: func(_, _ uuid.UUID) (bool, error) {
+			return true, nil
+		},
+		updateFn: func(_ uuid.UUID, p *models.Pet) (*models.Pet, error) {
+			currentStatus = p.IsActive
+			return &models.Pet{IsActive: currentStatus}, nil
+		},
+	}
+
+	u := usecase.NewPetUsecase(repo)
+
+	updated, err := u.Update(uuid.New(), uuid.New(), &models.Pet{IsActive: true})
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if !updated.IsActive {
+		t.Fatalf("expected IsActive=true, got %v", updated.IsActive)
+	}
+	if !currentStatus {
+		t.Fatalf("expected repository status=true, got %v", currentStatus)
+	}
+}
+
+func TestPetUsecase_Update_IsActive_TrueToFalse(t *testing.T) {
+	currentStatus := true
+
+	repo := &mockPetRepo{
+		checkBelongingFn: func(_, _ uuid.UUID) (bool, error) {
+			return true, nil
+		},
+		updateFn: func(_ uuid.UUID, p *models.Pet) (*models.Pet, error) {
+			currentStatus = p.IsActive
+			return &models.Pet{IsActive: currentStatus}, nil
+		},
+	}
+
+	u := usecase.NewPetUsecase(repo)
+
+	updated, err := u.Update(uuid.New(), uuid.New(), &models.Pet{IsActive: false})
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if updated.IsActive {
+		t.Fatalf("expected IsActive=false, got %v", updated.IsActive)
+	}
+	if currentStatus {
+		t.Fatalf("expected repository status=false, got %v", currentStatus)
+	}
+}
+
 func TestPetUsecase_Delete_Success(t *testing.T) {
 	repo := &mockPetRepo{
 		checkBelongingFn: func(_, _ uuid.UUID) (bool, error) {
