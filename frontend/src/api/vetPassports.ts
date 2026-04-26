@@ -1,5 +1,9 @@
 import { request } from "./client";
-import type { VetPassport, VetPassportUpsertPayload } from "../types/vetPassport";
+import type {
+  VetPassport,
+  VetPassportCreateResponse,
+  VetPassportUpsertPayload,
+} from "../types/vetPassport";
 
 export const vetPassportsApi = {
   list: () => request<VetPassport[]>("/vet-passports"),
@@ -7,7 +11,7 @@ export const vetPassportsApi = {
   getById: (id: string) => request<VetPassport>(`/vet-passports/${id}`),
 
   create: (payload: VetPassportUpsertPayload) =>
-    request<VetPassport>("/vet-passports", {
+    request<VetPassportCreateResponse>("/vet-passports", {
       method: "POST",
       body: JSON.stringify(payload),
     }),

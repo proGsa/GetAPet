@@ -1,4 +1,4 @@
-import type { PetCreatePayload, PetUpdatePayload } from "../types/pet";
+import type { Pet, PetCreatePayload, PetUpdatePayload } from "../types/pet";
 import type { VetPassportUpsertPayload } from "../types/vetPassport";
 
 export const createEmptyPetCreatePayload = (): PetCreatePayload => ({
@@ -28,7 +28,7 @@ export const normalizePetGender = (value: string): string => {
   return "Не указан";
 };
 
-export const toPetUpdatePayload = (payload: PetCreatePayload): PetUpdatePayload => ({
+export const toPetUpdatePayload = (payload: PetCreatePayload, isActive: boolean): PetUpdatePayload => ({
   pet_name: payload.pet_name,
   species: payload.species,
   pet_age: payload.pet_age,
@@ -39,7 +39,23 @@ export const toPetUpdatePayload = (payload: PetCreatePayload): PetUpdatePayload 
   good_with_children: payload.good_with_children,
   good_with_animals: payload.good_with_animals,
   pet_description: payload.pet_description,
+  is_active: isActive,
   price: payload.price,
+});
+
+export const toPetUpdatePayloadFromPet = (pet: Pet, isActive: boolean): PetUpdatePayload => ({
+  pet_name: pet.pet_name,
+  species: pet.species,
+  pet_age: pet.pet_age,
+  color: pet.color,
+  pet_gender: pet.pet_gender,
+  breed: pet.breed,
+  pedigree: pet.pedigree,
+  good_with_children: pet.good_with_children,
+  good_with_animals: pet.good_with_animals,
+  pet_description: pet.pet_description,
+  is_active: isActive,
+  price: pet.price,
 });
 
 export const createEmptyVetPassportPayload = (): VetPassportUpsertPayload => ({

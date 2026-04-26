@@ -16,11 +16,12 @@ import type { Pet, PetCreatePayload } from "../types/pet";
 import type { User } from "../types/user";
 import type { VetPassport, VetPassportUpsertPayload } from "../types/vetPassport";
 import { getErrorMessage } from "../utils/error";
-import { formatPrice, shortId } from "../utils/format";
+import { formatPrice } from "../utils/format";
 import {
   createEmptyVetPassportPayload,
   normalizePetGender,
   toPetUpdatePayload,
+  toPetUpdatePayloadFromPet,
 } from "../utils/pet";
 
 const toPetCreatePayloadFromPet = (pet: Pet): PetCreatePayload => ({
@@ -248,7 +249,7 @@ export function PetPage() {
       };
       const updatedPet = await petsApi.update(
         pet.id,
-        toPetUpdatePayload(nextPetPayload),
+        toPetUpdatePayload(nextPetPayload, pet.is_active),
         token,
       );
       setPet((current) => {
@@ -261,7 +262,6 @@ export function PetPage() {
           ...updatedPet,
           seller_id: current.seller_id,
           vet_passport_id: current.vet_passport_id,
-          is_active: current.is_active,
         };
       });
 
@@ -283,45 +283,58 @@ export function PetPage() {
     setIsSubmitting(true);
 
     try {
-      if (pet.is_active) {
-        const deactivated = await petsApi.update(
-          pet.id,
-          toPetUpdatePayload(toPetCreatePayloadFromPet(pet)),
-          token,
+      const nextIsActive = !pet.is_active;
+      let hadApprovedRequests = false;
+
+      if (nextIsActive) {
+        const requests = await purchaseRequestsApi.listByPet(pet.id, token);
+        const approvedRequests = requests.filter(
+          (request) => request.status.trim().toLowerCase() === "approved",
         );
-        setPet((current) => {
-          if (!current) {
-            return current;
+
+        if (approvedRequests.length > 0) {
+          hadApprovedRequests = true;
+          const confirmed = window.confirm(
+            "У объявления есть одобренная заявка. При активации она автоматически станет отклоненной. Продолжить?",
+          );
+
+          if (!confirmed) {
+            return;
           }
 
-          return {
-            ...current,
-            ...deactivated,
-            seller_id: current.seller_id,
-            vet_passport_id: current.vet_passport_id,
-            is_active: false,
-          };
-        });
-        setActionMessage("Объявление переведено в неактивные.");
-      } else {
-        const recreated = await petsApi.create(toPetCreatePayloadFromPet(pet), token);
-        await petsApi.remove(pet.id, token);
-        setPet((current) => {
-          if (!current) {
-            return current;
-          }
-
-          return {
-            ...current,
-            ...recreated,
-            seller_id: recreated.seller_id || current.seller_id,
-            vet_passport_id: recreated.vet_passport_id || current.vet_passport_id,
-            is_active: true,
-          };
-        });
-
-        setActionMessage("Объявление снова активно.");
+          await Promise.all(
+            approvedRequests.map((request) =>
+              purchaseRequestsApi.updateStatus(request.id, { status: "rejected" }, token),
+            ),
+          );
+        }
       }
+
+      const updatedPet = await petsApi.update(
+        pet.id,
+        toPetUpdatePayloadFromPet(pet, nextIsActive),
+        token,
+      );
+      setPet((current) => {
+        if (!current) {
+          return current;
+        }
+
+        return {
+          ...current,
+          ...updatedPet,
+          seller_id: current.seller_id,
+          vet_passport_id: current.vet_passport_id,
+        };
+      });
+
+      setActionMessage(
+        nextIsActive
+          ? hadApprovedRequests
+            ? "Объявление снова активно. Одобренная заявка автоматически отклонена."
+            : "Объявление снова активно."
+          : "Объявление переведено в неактивные.",
+      );
     } catch (toggleError) {
       setActionMessage(getErrorMessage(toggleError, "Не удалось изменить активность объявления"));
     } finally {
@@ -477,8 +490,10 @@ export function PetPage() {
                     <p>{seller.telephone_number || "Телефон не указан"}</p>
                     <p>{seller.city || "Город не указан"}</p>
                   </>
+                ) : !token ? (
+                  <p>Информация о продавце доступна после входа.</p>
                 ) : (
-                  <p>{`ID продавца: ${shortId(pet.seller_id)}`}</p>
+                  <p>Информация о продавце временно недоступна.</p>
                 )}
               </div>
             </article>
