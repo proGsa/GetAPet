@@ -40,4 +40,3 @@ var (
 	ErrInvalidCredentials     = errors.New("invalid credentials")
 	ErrUserLoginAlreadyExists = errors.New("user login already exists")
 )
-
