@@ -126,7 +126,7 @@ func PetToDto(p models.Pet) PetResponse {
 	return PetResponse{
 		ID:               p.ID.String(),
 		VetPassportID:    p.VetPassportID.String(),
-		SellerID:    p.SellerID.String(),
+		SellerID:         p.SellerID.String(),
 		PetName:          p.PetName,
 		Species:          p.Species,
 		PetAge:           p.PetAge,
