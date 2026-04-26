@@ -15,7 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param passport body dto.CreateVetPassportRequest true "Данные ветпаспорта"
-// @Success 201 {object} dto.VetPassportResponse
+// @Success 201 {object} dto.CreateVetPassportResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure 503 {object} ErrorResponse
@@ -40,7 +40,7 @@ func (vr *VetPassportRouter) CreateVetPassport(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusCreated, createdVetPassport)
+	writeSuccessResponse(w, http.StatusCreated, dto.CreateVetPassportResponseFromDomain(*createdVetPassport))
 }
 
 // GetVetPassports godoc
@@ -63,7 +63,7 @@ func (vr *VetPassportRouter) GetVetPassports(w http.ResponseWriter, _ *http.Requ
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, vetPassports)
+	writeSuccessResponse(w, http.StatusOK, dto.VetPassportsToDTO(vetPassports))
 }
 
 // GetVetPassport godoc
@@ -99,7 +99,7 @@ func (vr *VetPassportRouter) GetVetPassport(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, vetPassport)
+	writeSuccessResponse(w, http.StatusOK, dto.VetPassportToDTO(*vetPassport))
 }
 
 // UpdateVetPassport godoc
@@ -109,7 +109,7 @@ func (vr *VetPassportRouter) GetVetPassport(w http.ResponseWriter, r *http.Reque
 // @Produce json
 // @Param id path string true "ID ветпаспорта"
 // @Param passport body dto.UpdateVetPassportRequest true "Обновленные данные"
-// @Success 200 {object} dto.VetPassportResponse
+// @Success 200 {object} dto.UpdateVetPassportResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
@@ -145,7 +145,7 @@ func (vr *VetPassportRouter) UpdateVetPassport(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, updatedVetPassport)
+	writeSuccessResponse(w, http.StatusOK, dto.UpdateVetPassportResponseFromDomain(*updatedVetPassport))
 }
 
 // DeleteVetPassport godoc
