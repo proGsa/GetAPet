@@ -1691,6 +1691,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "pedigree": {
                     "type": "boolean",
                     "example": true
@@ -1760,6 +1764,10 @@ const docTemplate = `{
                     "example": false
                 },
                 "good_with_children": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "is_active": {
                     "type": "boolean",
                     "example": true
                 },

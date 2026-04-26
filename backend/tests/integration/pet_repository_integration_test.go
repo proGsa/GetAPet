@@ -162,6 +162,84 @@ func TestPetRepositoryIntegration(t *testing.T) {
 		if updated.PetName != "New" {
 			t.Fatalf("expected New, got %s", updated.PetName)
 		}
+
+		got, err := repo.GetByID(created.ID)
+		if err != nil {
+			t.Fatalf("get by id after update: %v", err)
+		}
+		if got.IsActive {
+			t.Fatalf("expected IsActive=false after update, got %v", got.IsActive)
+		}
+	})
+
+	t.Run("Update IsActive false to true", func(t *testing.T) {
+		clearPetTable(t, db)
+
+		created, err := repo.Create(&models.Pet{
+			VetPassportID: uuid.New(),
+			SellerID:      uuid.New(),
+			PetName:       "Toggle",
+			Species:       "cat",
+			PetAge:        2,
+			IsActive:      false,
+			Price:         100,
+		})
+		if err != nil {
+			t.Fatalf("create pet: %v", err)
+		}
+
+		if _, err = repo.Update(created.ID, &models.Pet{
+			PetName:  "Toggle",
+			Species:  "cat",
+			PetAge:   2,
+			IsActive: true,
+			Price:    100,
+		}); err != nil {
+			t.Fatalf("update pet: %v", err)
+		}
+
+		got, err := repo.GetByID(created.ID)
+		if err != nil {
+			t.Fatalf("get by id after update: %v", err)
+		}
+		if !got.IsActive {
+			t.Fatalf("expected IsActive=true after update, got %v", got.IsActive)
+		}
+	})
+
+	t.Run("Update IsActive true to false", func(t *testing.T) {
+		clearPetTable(t, db)
+
+		created, err := repo.Create(&models.Pet{
+			VetPassportID: uuid.New(),
+			SellerID:      uuid.New(),
+			PetName:       "ToggleBack",
+			Species:       "dog",
+			PetAge:        3,
+			IsActive:      true,
+			Price:         120,
+		})
+		if err != nil {
+			t.Fatalf("create pet: %v", err)
+		}
+
+		if _, err = repo.Update(created.ID, &models.Pet{
+			PetName:  "ToggleBack",
+			Species:  "dog",
+			PetAge:   3,
+			IsActive: false,
+			Price:    120,
+		}); err != nil {
+			t.Fatalf("update pet: %v", err)
+		}
+
+		got, err := repo.GetByID(created.ID)
+		if err != nil {
+			t.Fatalf("get by id after update: %v", err)
+		}
+		if got.IsActive {
+			t.Fatalf("expected IsActive=false after update, got %v", got.IsActive)
+		}
 	})
 
 	t.Run("GetByID not found", func(t *testing.T) {

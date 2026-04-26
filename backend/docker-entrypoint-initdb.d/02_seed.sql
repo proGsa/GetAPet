@@ -22,6 +22,10 @@
 -- (2, 2, 'approved', '2026-03-07 14:30:00'),
 -- (3, 3, 'rejected', '2026-03-06 09:15:00');
 
+INSERT INTO users (fio, telephone_number, city, user_login, user_password, status, user_description)
+VALUES
+('Иванов Иван Иванович', '+79161234567', 'Москва', 'testuser', '$2a$10$cyi8MBapl.iEUrWXhUjvu.3dBhr.bcIgKphV.9jjcnD7uNPOFFqXm', 'buyer', 'Любитель собак');
+
 
 COPY vet_passport(id, chipping, sterilization, health_issues, vaccinations, parasite_treatments) 
 FROM '/docker-entrypoint-initdb.d/vet_passport.csv' 
