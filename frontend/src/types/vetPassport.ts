@@ -7,6 +7,10 @@ export interface VetPassport {
   parasite_treatments: string;
 }
 
+export interface VetPassportCreateResponse {
+  id: string;
+}
+
 export interface VetPassportUpsertPayload {
   chipping: boolean;
   sterilization: boolean;

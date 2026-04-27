@@ -31,6 +31,10 @@ export interface PetCreatePayload {
   price: number;
 }
 
+export interface PetCreateResponse {
+  id: string;
+}
+
 export interface PetUpdatePayload {
   pet_name: string;
   species: string;
@@ -42,5 +46,10 @@ export interface PetUpdatePayload {
   good_with_children: boolean;
   good_with_animals: boolean;
   pet_description: string;
+  is_active: boolean;
   price: number;
 }
+
+export type PetUpdateResponse = PetUpdatePayload & {
+  id: string;
+};

@@ -170,6 +170,12 @@ export function CatalogPage() {
         <div className="card-grid">
           {filteredPets.map((pet) => {
             const seller = usersMap[pet.seller_id];
+            const sellerName = seller?.fio?.trim();
+            const sellerLabel = sellerName
+              ? sellerName
+              : token
+                ? "Продавец не указан"
+                : "Информация о продавце доступна после входа";
             return (
               <article key={pet.id} className="pet-card">
                 <div className="pet-card-main">
@@ -194,7 +200,7 @@ export function CatalogPage() {
                   </div>
                   <div>
                     <dt>Продавец</dt>
-                    <dd>{seller?.fio ?? "Продавец не указан"}</dd>
+                    <dd>{sellerLabel}</dd>
                   </div>
                   <div>
                     <dt>Цена</dt>

@@ -13,12 +13,25 @@ type CreateVetPassportRequest struct {
 	ParasiteTreatments string `json:"parasite_treatments" validate:"omitempty,max=1000" example:"Обработка от блох"`
 }
 
+type CreateVetPassportResponse struct {
+	ID string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+}
+
 type UpdateVetPassportRequest struct {
 	Chipping           bool   `json:"chipping" example:"true"`
 	Sterilization      bool   `json:"sterilization" example:"true"`
 	HealthIssues       string `json:"health_issues" validate:"omitempty,max=1000" example:"Нет"`
 	Vaccinations       string `json:"vaccinations" validate:"omitempty,max=1000" example:"Все прививки сделаны"`
 	ParasiteTreatments string `json:"parasite_treatments" validate:"omitempty,max=1000" example:"Регулярная обработка"`
+}
+
+type UpdateVetPassportResponse struct {
+	ID                 string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Chipping           bool   `json:"chipping" example:"true"`
+	Sterilization      bool   `json:"sterilization" example:"false"`
+	HealthIssues       string `json:"health_issues" example:"Нет"`
+	Vaccinations       string `json:"vaccinations" example:"Привит"`
+	ParasiteTreatments string `json:"parasite_treatments" example:"Обработан"`
 }
 
 type VetPassportResponse struct {
@@ -52,6 +65,23 @@ func UpdateVetPassportRequestFromDTO(req UpdateVetPassportRequest) models.VetPas
 
 func VetPassportToDTO(v models.VetPassport) VetPassportResponse {
 	return VetPassportResponse{
+		ID:                 v.ID.String(),
+		Chipping:           v.Chipping,
+		Sterilization:      v.Sterilization,
+		HealthIssues:       v.HealthIssues,
+		Vaccinations:       v.Vaccinations,
+		ParasiteTreatments: v.ParasiteTreatments,
+	}
+}
+
+func CreateVetPassportResponseFromDomain(v models.VetPassport) CreateVetPassportResponse {
+	return CreateVetPassportResponse{
+		ID: v.ID.String(),
+	}
+}
+
+func UpdateVetPassportResponseFromDomain(v models.VetPassport) UpdateVetPassportResponse {
+	return UpdateVetPassportResponse{
 		ID:                 v.ID.String(),
 		Chipping:           v.Chipping,
 		Sterilization:      v.Sterilization,

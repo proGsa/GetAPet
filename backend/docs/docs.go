@@ -79,7 +79,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.PetResponse"
+                            "$ref": "#/definitions/dto.CreatePetResponse"
                         }
                     },
                     "400": {
@@ -198,7 +198,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.PetResponse"
+                            "$ref": "#/definitions/dto.UpdatePetResponse"
                         }
                     },
                     "400": {
@@ -1162,7 +1162,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.VetPassportResponse"
+                            "$ref": "#/definitions/dto.CreateVetPassportResponse"
                         }
                     },
                     "400": {
@@ -1270,7 +1270,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.VetPassportResponse"
+                            "$ref": "#/definitions/dto.UpdateVetPassportResponse"
                         }
                     },
                     "400": {
@@ -1496,6 +1496,15 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreatePetResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                }
+            }
+        },
         "dto.CreatePurchaseRequest": {
             "type": "object",
             "properties": {
@@ -1611,6 +1620,15 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateVetPassportResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                }
+            }
+        },
         "dto.GetPurchaseRequestResponse": {
             "type": "object",
             "properties": {
@@ -1719,6 +1737,10 @@ const docTemplate = `{
                     "type": "number",
                     "example": 15000
                 },
+                "seller_id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
                 "species": {
                     "type": "string",
                     "example": "cat"
@@ -1766,6 +1788,89 @@ const docTemplate = `{
                 "good_with_children": {
                     "type": "boolean",
                     "example": true
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "pedigree": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "pet_age": {
+                    "type": "integer",
+                    "maximum": 50,
+                    "minimum": 0,
+                    "example": 3
+                },
+                "pet_description": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "example": "Спокойный и ласковый"
+                },
+                "pet_gender": {
+                    "type": "string",
+                    "enum": [
+                        "male",
+                        "female"
+                    ],
+                    "example": "male"
+                },
+                "pet_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1,
+                    "example": "Барсик"
+                },
+                "price": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 18000
+                },
+                "species": {
+                    "type": "string",
+                    "enum": [
+                        "cat",
+                        "dog",
+                        "bird",
+                        "other"
+                    ],
+                    "example": "cat"
+                }
+            }
+        },
+        "dto.UpdatePetResponse": {
+            "type": "object",
+            "required": [
+                "color",
+                "pet_age",
+                "pet_gender",
+                "pet_name",
+                "price",
+                "species"
+            ],
+            "properties": {
+                "breed": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "british"
+                },
+                "color": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "example": "black"
+                },
+                "good_with_animals": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "good_with_children": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "is_active": {
                     "type": "boolean",
@@ -1927,6 +2032,35 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 1000,
                     "example": "Все прививки сделаны"
+                }
+            }
+        },
+        "dto.UpdateVetPassportResponse": {
+            "type": "object",
+            "properties": {
+                "chipping": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "health_issues": {
+                    "type": "string",
+                    "example": "Нет"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "parasite_treatments": {
+                    "type": "string",
+                    "example": "Обработан"
+                },
+                "sterilization": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "vaccinations": {
+                    "type": "string",
+                    "example": "Привит"
                 }
             }
         },

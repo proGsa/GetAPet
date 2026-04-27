@@ -1,5 +1,11 @@
 import { request } from "./client";
-import type { Pet, PetCreatePayload, PetUpdatePayload } from "../types/pet";
+import type {
+  Pet,
+  PetCreatePayload,
+  PetCreateResponse,
+  PetUpdatePayload,
+  PetUpdateResponse,
+} from "../types/pet";
 
 export const petsApi = {
   list: () => request<Pet[]>("/pets"),
@@ -7,14 +13,14 @@ export const petsApi = {
   getById: (id: string) => request<Pet>(`/pets/${id}`),
 
   create: (payload: PetCreatePayload, token: string) =>
-    request<Pet>("/pets", {
+    request<PetCreateResponse>("/pets", {
       method: "POST",
       body: JSON.stringify(payload),
       token,
     }),
 
   update: (id: string, payload: PetUpdatePayload, token: string) =>
-    request<Pet>(`/pets/${id}`, {
+    request<PetUpdateResponse>(`/pets/${id}`, {
       method: "PUT",
       body: JSON.stringify(payload),
       token,

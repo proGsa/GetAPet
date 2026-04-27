@@ -38,7 +38,7 @@ func getUserIDFromContext(r *http.Request) uuid.UUID {
 // @Produce json
 // @Security BearerAuth
 // @Param pet body dto.CreatePetRequest true "Данные питомца"
-// @Success 201 {object} dto.PetResponse
+// @Success 201 {object} dto.CreatePetResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 401 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
@@ -74,7 +74,7 @@ func (pr *PetRouter) CreatePet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusCreated, createdPet)
+	writeSuccessResponse(w, http.StatusCreated, dto.CreatePetResponseFromDomain(*createdPet))
 }
 
 // GetPets godoc
@@ -97,7 +97,7 @@ func (pr *PetRouter) GetPets(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, pets)
+	writeSuccessResponse(w, http.StatusOK, dto.PetsToDto(pets))
 }
 
 // GetPet godoc
@@ -133,7 +133,7 @@ func (pr *PetRouter) GetPet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, pet)
+	writeSuccessResponse(w, http.StatusOK, dto.PetToDto(*pet))
 }
 
 // UpdatePet godoc
@@ -144,7 +144,7 @@ func (pr *PetRouter) GetPet(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "ID питомца"
 // @Param pet body dto.UpdatePetRequest true "Обновленные данные питомца"
-// @Success 200 {object} dto.PetResponse
+// @Success 200 {object} dto.UpdatePetResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 401 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
@@ -183,7 +183,7 @@ func (pr *PetRouter) UpdatePet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeSuccessResponse(w, http.StatusOK, updatedPet)
+	writeSuccessResponse(w, http.StatusOK, dto.UpdatePetResponseFromDomain(*updatedPet))
 }
 
 // DeletePet godoc

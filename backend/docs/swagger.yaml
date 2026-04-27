@@ -94,6 +94,12 @@ definitions:
     - price
     - species
     type: object
+  dto.CreatePetResponse:
+    properties:
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
   dto.CreatePurchaseRequest:
     properties:
       buyer_id:
@@ -179,6 +185,12 @@ definitions:
         maxLength: 1000
         type: string
     type: object
+  dto.CreateVetPassportResponse:
+    properties:
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
   dto.GetPurchaseRequestResponse:
     properties:
       buyer_id:
@@ -257,6 +269,9 @@ definitions:
       price:
         example: 15000
         type: number
+      seller_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
       species:
         example: cat
         type: string
@@ -286,6 +301,71 @@ definitions:
       good_with_children:
         example: true
         type: boolean
+      is_active:
+        example: true
+        type: boolean
+      pedigree:
+        example: true
+        type: boolean
+      pet_age:
+        example: 3
+        maximum: 50
+        minimum: 0
+        type: integer
+      pet_description:
+        example: Спокойный и ласковый
+        maxLength: 1000
+        type: string
+      pet_gender:
+        enum:
+        - male
+        - female
+        example: male
+        type: string
+      pet_name:
+        example: Барсик
+        maxLength: 100
+        minLength: 1
+        type: string
+      price:
+        example: 18000
+        minimum: 0
+        type: number
+      species:
+        enum:
+        - cat
+        - dog
+        - bird
+        - other
+        example: cat
+        type: string
+    required:
+    - color
+    - pet_age
+    - pet_gender
+    - pet_name
+    - price
+    - species
+    type: object
+  dto.UpdatePetResponse:
+    properties:
+      breed:
+        example: british
+        maxLength: 100
+        type: string
+      color:
+        example: black
+        maxLength: 50
+        type: string
+      good_with_animals:
+        example: false
+        type: boolean
+      good_with_children:
+        example: true
+        type: boolean
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
       is_active:
         example: true
         type: boolean
@@ -416,6 +496,27 @@ definitions:
         maxLength: 1000
         type: string
     type: object
+  dto.UpdateVetPassportResponse:
+    properties:
+      chipping:
+        example: true
+        type: boolean
+      health_issues:
+        example: Нет
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      parasite_treatments:
+        example: Обработан
+        type: string
+      sterilization:
+        example: false
+        type: boolean
+      vaccinations:
+        example: Привит
+        type: string
+    type: object
   dto.UserResponse:
     properties:
       city:
@@ -505,7 +606,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.PetResponse'
+            $ref: '#/definitions/dto.CreatePetResponse'
         "400":
           description: Bad Request
           schema:
@@ -619,7 +720,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.PetResponse'
+            $ref: '#/definitions/dto.UpdatePetResponse'
         "400":
           description: Bad Request
           schema:
@@ -1199,7 +1300,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.VetPassportResponse'
+            $ref: '#/definitions/dto.CreateVetPassportResponse'
         "400":
           description: Bad Request
           schema:
@@ -1299,7 +1400,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.VetPassportResponse'
+            $ref: '#/definitions/dto.UpdateVetPassportResponse'
         "400":
           description: Bad Request
           schema:

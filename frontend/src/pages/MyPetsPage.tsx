@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { petsApi } from "../api/pets";
+import { purchaseRequestsApi } from "../api/purchaseRequests";
 import { vetPassportsApi } from "../api/vetPassports";
 import {
   PetWithPassportForm,
@@ -19,6 +20,7 @@ import {
   createEmptyVetPassportPayload,
   normalizePetGender,
   toPetUpdatePayload,
+  toPetUpdatePayloadFromPet,
 } from "../utils/pet";
 
 const toPetCreatePayloadFromPet = (pet: Pet): PetCreatePayload => ({
@@ -147,7 +149,7 @@ export function MyPetsPage() {
     pet: PetCreatePayload;
     passport: VetPassportUpsertPayload;
   }) => {
-    if (!token) {
+    if (!token || !user) {
       return;
     }
 
@@ -168,8 +170,20 @@ export function MyPetsPage() {
         token,
       );
 
-      setPets((current) => [createdPet, ...current]);
-      setPassportsMap((current) => ({ ...current, [createdPassport.id]: createdPassport }));
+      const nextPassport: VetPassport = {
+        id: createdPassport.id,
+        ...payload.passport,
+      };
+      const nextPet: Pet = {
+        ...payload.pet,
+        id: createdPet.id,
+        seller_id: user.id,
+        vet_passport_id: createdPassport.id,
+        is_active: true,
+      };
+
+      setPets((current) => [nextPet, ...current]);
+      setPassportsMap((current) => ({ ...current, [nextPassport.id]: nextPassport }));
       setMessage("Объявление создано.");
     } catch (createError) {
       if (createdPassportId) {
@@ -201,7 +215,7 @@ export function MyPetsPage() {
 
     try {
       const updatedPassport = await vetPassportsApi.update(pet.vet_passport_id, payload.passport);
-      const updatedPet = await petsApi.update(pet.id, toPetUpdatePayload(payload.pet), token);
+      const updatedPet = await petsApi.update(pet.id, toPetUpdatePayload(payload.pet, pet.is_active), token);
 
       setPassportsMap((current) => ({
         ...current,
@@ -218,7 +232,6 @@ export function MyPetsPage() {
             ...updatedPet,
             seller_id: item.seller_id,
             vet_passport_id: item.vet_passport_id,
-            is_active: item.is_active,
           };
         }),
       );
@@ -265,49 +278,55 @@ export function MyPetsPage() {
     setMessage(null);
 
     try {
-      if (pet.is_active) {
-        const deactivated = await petsApi.update(
-          pet.id,
-          toPetUpdatePayload(toPetCreatePayloadFromPet(pet)),
-          token,
-        );
-        setPets((current) =>
-          current.map((item) => {
-            if (item.id !== pet.id) {
-              return item;
-            }
+      const nextIsActive = !pet.is_active;
+      let hadApprovedRequests = false;
 
-            return {
-              ...item,
-              ...deactivated,
-              seller_id: item.seller_id,
-              vet_passport_id: item.vet_passport_id,
-              is_active: false,
-            };
-          }),
+      if (nextIsActive) {
+        const requests = await purchaseRequestsApi.listByPet(pet.id, token);
+        const approvedRequests = requests.filter(
+          (request) => request.status.trim().toLowerCase() === "approved",
         );
-        setMessage("Объявление переведено в неактивные.");
-      } else {
-        const recreated = await petsApi.create(toPetCreatePayloadFromPet(pet), token);
-        await petsApi.remove(pet.id, token);
-        setPets((current) =>
-          current.map((item) => {
-            if (item.id !== pet.id) {
-              return item;
-            }
 
-            return {
-              ...item,
-              ...recreated,
-              seller_id: recreated.seller_id || item.seller_id,
-              vet_passport_id: recreated.vet_passport_id || item.vet_passport_id,
-              is_active: true,
-            };
-          }),
-        );
-        setEditingPetId((current) => (current === pet.id ? null : current));
-        setMessage("Объявление снова активно.");
+        if (approvedRequests.length > 0) {
+          hadApprovedRequests = true;
+          const confirmed = window.confirm(
+            "У объявления есть одобренная заявка. При активации она автоматически станет отклоненной. Продолжить?",
+          );
+
+          if (!confirmed) {
+            return;
+          }
+
+          await Promise.all(
+            approvedRequests.map((request) =>
+              purchaseRequestsApi.updateStatus(request.id, { status: "rejected" }, token),
+            ),
+          );
+        }
       }
+
+      const updatedPet = await petsApi.update(pet.id, toPetUpdatePayloadFromPet(pet, nextIsActive), token);
+      setPets((current) =>
+        current.map((item) => {
+          if (item.id !== pet.id) {
+            return item;
+          }
+
+          return {
+            ...item,
+            ...updatedPet,
+            seller_id: item.seller_id,
+            vet_passport_id: item.vet_passport_id,
+          };
+        }),
+      );
+      setMessage(
+        nextIsActive
+          ? hadApprovedRequests
+            ? "Объявление снова активно. Одобренная заявка автоматически отклонена."
+            : "Объявление снова активно."
+          : "Объявление переведено в неактивные.",
+      );
     } catch (toggleError) {
       setMessage(getErrorMessage(toggleError, "Не удалось изменить активность объявления"));
     } finally {
@@ -412,4 +431,3 @@ export function MyPetsPage() {
     </section>
   );
 }
-
