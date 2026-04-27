@@ -1,0 +1,165 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+
+jobs:
+  fmt:
+    name: Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Check formatting
+        working-directory: backend
+        run: |
+          go fmt ./...
+          test -z "$(git diff --exit-code)"
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s latest
+
+      - name: Run lint
+        working-directory: backend
+        run: ../bin/golangci-lint run ./...
+        
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.25
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run security check
+        working-directory: backend
+        run: govulncheck ./...
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [fmt, lint, security]
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # ===== BACKEND =====
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Build Backend
+        working-directory: backend
+        run: go build -o ./bin/app ./cmd
+        
+      - name: Build backend Docker image
+        run: docker build -t getapet-backend:latest ./backend
+      
+      # ===== FRONTEND =====
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Build frontend Docker image
+        run: docker build -t getapet-frontend:latest ./frontend
+
+      # ===== DATABASE =====
+      - name: Build database Docker image
+        run: |
+          docker build -t getapet-db:latest -f backend/postgres/Dockerfile ./backend
+        
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run unit tests (docker compose)
+        run: |
+          docker compose -f backend/tests/docker-compose.unit.yml up --build --abort-on-container-exit --exit-code-from unit-tests
+  
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run integration tests (docker compose)
+        run: |
+          docker compose -f backend/tests/docker-compose.integration.yml up --build --abort-on-container-exit --exit-code-from integration-tests
+
+  docs:
+    name: Generate Swagger Docs
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Generate docs
+        working-directory: backend
+        run: swag init -d ./cmd,./internal -g main.go --parseInternal --parseDependency --parseDepth 2 -o ./docs
+
+      - name: Commit Swagger
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+          git add backend/docs
+
+          git diff --cached --quiet && exit 0
+
+          git commit -m "update swagger [skip ci]"
+          git push

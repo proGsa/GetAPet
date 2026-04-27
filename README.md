@@ -240,6 +240,19 @@ docker compose up -d --build
 ```
 ---
 
+## 7.1 Дашборд скорости разработки (GitHub)
+
+Для локального стенда с метриками скорости разработки (issues / pull requests / commits) используйте инструкции:
+
+- `github-metrics/README.md`
+
+Кратко:
+- поднимите `elasticsearch` и `kibana` через профиль `metrics` в `docker-compose.yml`,
+- загрузите данные GitHub скриптом `github-metrics/load_github_metrics.py`,
+- визуализируйте метрики в Kibana на `http://localhost:5601`.
+
+---
+
 
 ## 8. Критерии приёмки MVP
 
